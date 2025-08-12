@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from 'config/axios-customize';
 import type { IAccount, IBackendRes, IGetAccount, IMerchant, IModelPaginate, IUser } from "../types/backend"
 
 export const callRegister = (name: string, email: string, password: string, age: number, gender: string, address: string) => {

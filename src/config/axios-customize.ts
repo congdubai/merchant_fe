@@ -3,7 +3,7 @@ import axiosClient from "axios";
 import { notification } from "antd";
 import type { IBackendRes } from "../types/backend";
 import { store } from "../redux/store";
-import { setRefreshTokenAction } from "../redux/slice/accountSlide";
+import { setRefreshTokenAction } from "@/redux/slice/accountSlide";
 
 interface AccessTokenResponse {
     access_token: string;
@@ -12,6 +12,7 @@ interface AccessTokenResponse {
 /**
  * Creates an initial 'axios' instance with custom settings.
  */
+console.log("VITE_BACKEND_URL:", import.meta.env.VITE_BACKEND_URL);
 
 const instance = axiosClient.create({
     baseURL: import.meta.env.VITE_BACKEND_URL as string,
@@ -46,41 +47,6 @@ instance.interceptors.request.use(function (config) {
  */
 instance.interceptors.response.use(
     (res) => res.data,
-    async (error) => {
-        if (error.config && error.response
-            && +error.response.status === 401
-            && error.config.url !== '/api/v1/auth/login'
-            && !error.config.headers[NO_RETRY_HEADER]
-        ) {
-            const access_token = await handleRefreshToken();
-            error.config.headers[NO_RETRY_HEADER] = 'true'
-            if (access_token) {
-                error.config.headers['Authorization'] = `Bearer ${access_token}`;
-                localStorage.setItem('access_token', access_token)
-                return instance.request(error.config);
-            }
-        }
-
-        if (
-            error.config && error.response
-            && +error.response.status === 400
-            && error.config.url === '/api/v1/auth/refresh'
-            && location.pathname.startsWith("/admin")
-        ) {
-            const message = error?.response?.data?.error ?? "Có lỗi xảy ra, vui lòng login.";
-            // dispatch redux action
-            store.dispatch(setRefreshTokenAction({ status: true, message }));
-        }
-
-        if (+error.response.status === 403) {
-            notification.error({
-                message: error?.response?.data?.message ?? "",
-                description: error?.response?.data?.error ?? ""
-            })
-        }
-
-        return error?.response?.data ?? Promise.reject(error);
-    }
 );
 
 /**
