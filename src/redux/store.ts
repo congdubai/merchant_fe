@@ -1,9 +1,10 @@
-import type {Action,ThunkAction,} from '@reduxjs/toolkit';
-import { configureStore} from '@reduxjs/toolkit';
+import type { Action, ThunkAction, } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
+import merchantReducer from './slice/merchantSlide';
 
 export const store = configureStore({
     reducer: {
-
+        merchant: merchantReducer,
     }
 });
 

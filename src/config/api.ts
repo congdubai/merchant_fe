@@ -1,5 +1,5 @@
 import axios from "axios"
-import type { IAccount, IBackendRes, IGetAccount, IUser } from "../types/backend"
+import type { IAccount, IBackendRes, IGetAccount, IMerchant, IModelPaginate, IUser } from "../types/backend"
 
 export const callRegister = (name: string, email: string, password: string, age: number, gender: string, address: string) => {
     return axios.post<IBackendRes<IUser>>('/api/v1/auth/register', { name, email, password, age, gender, address })
@@ -19,4 +19,12 @@ export const callRefreshToken = () => {
 
 export const callLogout = () => {
     return axios.post<IBackendRes<string>>('/api/v1/auth/logout')
+}
+
+/**
+ *
+Module Merchant
+ */
+export const callFetchMerchants = (query: string) => {
+    return axios.get<IBackendRes<IModelPaginate<IMerchant>>>(`/api/v1/merchants?${query}`)
 }

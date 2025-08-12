@@ -1,7 +1,6 @@
 export interface IBackendRes<T> {
-    error?: string | string[];
-    message: string;
-    statusCode: number | string;
+    message: errorDesc;
+    errorCode: number | string;
     data?: T;
 }
 export interface IModelPaginate<T> {
@@ -52,4 +51,23 @@ export interface IUser {
     deletedAt?: boolean | null;
     createdAt?: string;
     updatedAt?: string;
+}
+
+export interface IMerchant {
+    merchantId: string;
+    accountNo: string;
+    fullName: string;
+    short_name: string;
+    mcc: string;
+    city: string;
+    location: string;
+    phoneNo: number;
+    email: string;
+    status: string;
+    openDate?: string;
+    closeDate?: string;
+    branchCode: string;
+    updatedAt?: string;
+    createdBy: string;
+    updatedBy?: string;
 }
