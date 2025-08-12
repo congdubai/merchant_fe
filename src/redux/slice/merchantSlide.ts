@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { IMerchant } from "../../types/backend";
 import { callFetchMerchants } from "../../config/api";
 
-export interface IState {
+interface IState {
     isFetching: boolean;
     meta: {
         page: number;

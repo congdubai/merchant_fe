@@ -12,7 +12,6 @@ interface AccessTokenResponse {
 /**
  * Creates an initial 'axios' instance with custom settings.
  */
-console.log("VITE_BACKEND_URL:", import.meta.env.VITE_BACKEND_URL);
 
 const instance = axiosClient.create({
     baseURL: import.meta.env.VITE_BACKEND_URL as string,

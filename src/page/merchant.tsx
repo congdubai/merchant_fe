@@ -4,7 +4,7 @@ import type { IMerchant } from "../types/backend";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { useRef, useState } from "react";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import DataTable from "../components/share/data-table";
+import DataTable from "@/components/share/data-table";
 import { sfLike } from "spring-filter-query-builder";
 import queryString from "query-string";
 import dayjs from "dayjs";
@@ -29,7 +29,7 @@ const MerchantPage = () => {
     const columns: ProColumns<IMerchant>[] = [
         {
             title: 'Id',
-            dataIndex: 'id',
+            dataIndex: 'merchantId',
             width: 100,
             render: (text, record, index, action) => {
                 return (
@@ -142,13 +142,18 @@ const MerchantPage = () => {
             <DataTable<IMerchant>
                 actionRef={tableRef}
                 headerTitle="Danh sách kích thước"
-                rowKey="id"
+                rowKey="merchantId"
                 loading={isFetching}
                 columns={columns}
                 dataSource={merchants}
                 request={async (params, sort, filter): Promise<any> => {
                     const query = buildQuery(params, sort, filter);
-                    dispatch(fetchMerchant({ query }))
+                    await dispatch(fetchMerchant({ query }));
+                    return {
+                        data: merchants,
+                        success: true,
+                        total: meta.total,
+                    };
                 }}
                 scroll={{ x: true }}
                 pagination={
