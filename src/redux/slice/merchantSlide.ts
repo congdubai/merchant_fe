@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { IMerchant } from "../../types/backend";
-import { callFetchMerchants } from "../../config/api";
+import { callFetchMerchants, callSearchMerchants } from "../../config/api";
 
 interface IState {
     isFetching: boolean;
@@ -22,11 +22,18 @@ export const fetchMerchant = createAsyncThunk(
     }
 )
 
+export const searchhMerchant = createAsyncThunk(
+    'merchant/searchMerchant',
+    async ({ query }: { query: string }) => {
+        const res = await callSearchMerchants(query);
+        return res;
+    }
+)
 const initialState: IState = {
     isFetching: true,
     meta: {
         page: 1,
-        pageSize: 10,
+        pageSize: 5,
         pages: 0,
         total: 0
     },
@@ -53,6 +60,29 @@ export const merchantSlide = createSlice({
         })
 
         builder.addCase(fetchMerchant.fulfilled, (state, action) => {
+            if (action.payload && action.payload.data) {
+                state.isFetching = false;
+                state.meta = action.payload.data.meta;
+                state.result = action.payload.data.result;
+            }
+            // Add user to the state array
+
+            // state.courseOrder = action.payload;
+        })
+
+        builder.addCase(searchhMerchant.pending, (state, action) => {
+            state.isFetching = true;
+            // Add user to the state array
+            // state.courseOrder = action.payload;
+        })
+
+        builder.addCase(searchhMerchant.rejected, (state, action) => {
+            state.isFetching = false;
+            // Add user to the state array
+            // state.courseOrder = action.payload;
+        })
+
+        builder.addCase(searchhMerchant.fulfilled, (state, action) => {
             if (action.payload && action.payload.data) {
                 state.isFetching = false;
                 state.meta = action.payload.data.meta;

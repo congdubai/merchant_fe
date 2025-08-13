@@ -28,3 +28,7 @@ Module Merchant
 export const callFetchMerchants = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<IMerchant>>>(`/api/v1/merchants?${query}`)
 }
+
+export const callSearchMerchants = (query: string) => {
+    return axios.get<IBackendRes<IModelPaginate<IMerchant>>>(`/api/v1/merchants/search?${query}`)
+}

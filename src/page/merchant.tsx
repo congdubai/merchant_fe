@@ -8,7 +8,8 @@ import DataTable from "@/components/share/data-table";
 import { sfLike } from "spring-filter-query-builder";
 import queryString from "query-string";
 import dayjs from "dayjs";
-import { fetchMerchant } from "../redux/slice/merchantSlide";
+import { fetchMerchant, searchhMerchant } from "../redux/slice/merchantSlide";
+import { callSearchMerchants } from "@/config/api";
 
 const MerchantPage = () => {
     const [openModal, setOpenModnpm] = useState<boolean>(false);
@@ -91,11 +92,13 @@ const MerchantPage = () => {
         {
             title: 'Trạng thái',
             dataIndex: 'status',
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            hideInSearch: true,
+            valueType: 'select',
+            fieldProps: {
+                options: [
+                    { label: 'Active', value: 'Active' },
+                    { label: 'Close', value: 'Close' },
+                ],
+            },
         },
         {
             title: 'Mã CN',
@@ -198,6 +201,35 @@ const MerchantPage = () => {
 
         let temp = queryString.stringify(q);
 
+        return temp;
+    }
+
+    const buildQuerySearch = (params: any, sort: any, filter: any) => {
+        const clone = { ...params };
+        const q: any = {
+            page: params.current,
+            size: params.pageSize,
+            filter: ""
+        }
+
+        if (clone.merchantId) q.filter = `${sfLike("merchantId", clone.merchantId)}`;
+
+        if (clone.accountNo) {
+            q.filter = q.filter ?
+                q.filter + " and " + `${sfLike("accountNo", clone.accountNo)}` :
+                `${sfLike("accountNo", clone.accountNo)}`;
+        }
+        if (clone.status) {
+            q.filter = q.filter ?
+                q.filter + " and " + `${sfLike("status", clone.status)}` :
+                `${sfLike("status", clone.status)}`;
+        }
+
+
+        if (!q.filter) delete q.filter;
+
+        let temp = queryString.stringify(q);
+
         let sortBy = "";
         if (sort && sort.name) {
             sortBy = sort.name === 'ascend' ? "sort=name,asc" : "sort=name,desc";
@@ -218,6 +250,8 @@ const MerchantPage = () => {
 
         return temp;
     }
+
+
     return (
         <div>
             <DataTable<IMerchant>
@@ -228,14 +262,18 @@ const MerchantPage = () => {
                 columns={columns}
                 dataSource={merchants}
                 request={async (params, sort, filter): Promise<any> => {
-                    const query = buildQuery(params, sort, filter);
-                    await dispatch(fetchMerchant({ query }));
-                    return {
-                        data: merchants,
-                        success: true,
-                        total: meta.total,
-                    };
+                    const hasSearch = params.merchantId && params.merchantId.trim() || params.accountNo && params.accountNo.trim() ||
+                        params.status && params.status.trim() !== '';
+
+                    if (hasSearch) {
+                        const querySearch = buildQuerySearch(params, sort, filter);
+                        await dispatch(searchhMerchant({ query: querySearch }));
+                    } else {
+                        const queryAll = buildQuery(params, sort, filter);
+                        await dispatch(fetchMerchant({ query: queryAll }));
+                    }
                 }}
+
                 scroll={{ x: true }}
                 pagination={
                     {
