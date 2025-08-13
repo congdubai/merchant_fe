@@ -3,8 +3,10 @@ import LayoutAdmin from "./components/admin/layout.admin";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import viVN from 'antd/es/locale/vi_VN';
-import MerchantPage from "./page/merchant";
 import MccPage from "./page/mcc";
+import MerchantPage from "./page/admin/merchant";
+import ReportPage from "./page/admin/report";
+
 
 
 export default function App() {
@@ -24,7 +26,12 @@ export default function App() {
           path: "mcc",
           element:
             <MccPage />
-        }
+        },
+        {
+          path: "report",
+          element:
+            <ReportPage />
+        },
       ],
     },
 

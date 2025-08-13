@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@storybook/react": "^9.1.2",
     "@types/node": "^24.2.1",
     "@types/query-string": "^6.3.0",
     "@types/react": "^18.0.37",

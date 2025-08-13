@@ -131,10 +131,6 @@ const MccPage = () => {
                 request={async (params, sort): Promise<any> => {
                     const query = buildQuery(params, sort);
                     dispatch(fetchMcc({ query }));
-                    // Sửa lại request để Pro-Table hoạt động đúng
-                    // Nó cần biết meta và data để xử lý phân trang
-                    // Nhưng vì ta dùng Redux, ta sẽ đợi Redux cập nhật và `dataSource` sẽ thay đổi
-                    // return một promise rỗng là được
                     return {
                         data: mccList,
                         success: true,
@@ -146,7 +142,7 @@ const MccPage = () => {
                     current: meta.page,
                     pageSize: meta.pageSize,
                     showSizeChanger: true,
-                    total: meta.total,
+                    total: meta.total, 
                     showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} mục`,
                 }}
                 rowSelection={false}

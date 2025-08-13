@@ -24,31 +24,46 @@ const ModalMcc = (props: IProps) => {
         }
     }, [dataInit]);
 
-    const submitMcc = async (valuesForm: IMcc) => { // <<< Gán kiểu IMcc cho valuesForm
+    const submitMcc = async (valuesForm: IMcc) => {
+    try {
+        const { code, description, descriptionEn, isActive } = valuesForm;
+        let res: any; 
+
         if (dataInit?.code) {
             // Chế độ UPDATE
-            const { description, descriptionEn, isActive } = valuesForm;
             const mccUpdateData = { description, descriptionEn, isActive };
-            const res = await callUpdateMcc(mccUpdateData, dataInit.code); // <<< Cách gọi đã khớp với API mới
-            if (res.data) {
-                notification.success({ message: 'Cập nhật MCC thành công!' });
-                handleReset();
-                reloadTable();
-            } else {
-                notification.error({ message: 'Có lỗi xảy ra', description: res.message });
-            }
+            res = await callUpdateMcc(mccUpdateData, dataInit.code);
         } else {
             // Chế độ CREATE
-            const res = await callCreateMcc(valuesForm); // <<< Gửi thẳng valuesForm vì nó đã có đúng kiểu IMcc
-            if (res.data) {
-                notification.success({ message: 'Thêm mới MCC thành công!' });
-                handleReset();
-                reloadTable();
-            } else {
-                notification.error({ message: 'Có lỗi xảy ra', description: res.message });
-            }
+            const mccCreate = { code, description, descriptionEn, isActive };
+            res = await callCreateMcc(mccCreate); 
+        } 
+
+        const actualResponse = res.data;
+        // Xử lý chung cho cả CREATE và UPDATE
+        if (actualResponse && actualResponse.errorCode === 0) {
+            notification.success({
+                 message: actualResponse.errorDesc || (dataInit?.code ? 'Cập nhật thành công!' : 'Thêm mới thành công!'),
+            });
+            handleReset();
+            reloadTable();
+        } else {
+            // Trường hợp API thành công (status 2xx) nhưng có errorCode khác 0
+            notification.error({
+                message: 'Thao tác thất bại',
+                description: actualResponse?.errorDesc || "Lỗi không xác định từ API."
+            });
         }
+
+    } catch (error: any) {
+        // Xử lý chung cho lỗi HTTP (status 4xx, 5xx)
+        const errorMessage = error?.response?.data?.errorDesc ?? "Có lỗi không xác định";
+        notification.error({
+            message: 'Thao tác thất bại',
+            description: errorMessage
+        });
     }
+}
 
     const handleReset = () => {
         form.resetFields();
