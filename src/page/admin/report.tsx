@@ -1,11 +1,12 @@
 import { IMerchant, IMerchantByYear } from "@/types/backend";
 import { CSSProperties, useEffect, useState } from 'react';
-import { Alert, Col, ConfigProvider, DatePicker, Flex, Image, Popover, Row, Space, Table, Tag, TagProps, Typography } from 'antd';
-import { StarFilled } from '@ant-design/icons';
+import { Alert, Button, Col, ConfigProvider, DatePicker, Flex, Image, Popover, Row, Space, Table, Tag, TagProps, Typography } from 'antd';
+import { FileExcelOutlined, StarFilled } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table/interface';
 import dayjs from 'dayjs';
 import { Card } from "./report/Card/Cart";
-import { callReportMerchantByYear } from "@/config/api";
+import { callExportMerchantByYear, callReportMerchantByYear } from "@/config/api";
+import Ribbon from "antd/es/badge/Ribbon";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const { RangePicker } = DatePicker;
 
@@ -38,7 +39,7 @@ const ReportPage = () => {
         const reportMerchantByYear = async () => {
             try {
                 setExportByYearLoading(true);
-                const res = await callReportMerchantByYear(year.toString())
+                const res = await callReportMerchantByYear(year.format("YYYY"));
                 setExportByYear(res.data!);
             } catch (err: any) {
                 setExportByYearError(err.message || 'Đã có lỗi xảy ra');
@@ -46,7 +47,28 @@ const ReportPage = () => {
                 setExportByYearLoading(false);
             }
         };
-    })
+        reportMerchantByYear();
+    }, [year])
+
+    const exportMerchantByYear = async () => {
+        try {
+            const response = await callExportMerchantByYear(year.format("YYYY"));
+            // Tạo URL từ file blob
+            const url = window.URL.createObjectURL(new Blob([response]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "merchant_year_" + year.format("YYYY") + ".xlsx");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Lỗi khi xuất Excel:", error);
+        }
+    };
+
+
 
     const PRODUCTS_COLUMNS: ColumnsType<IMerchantByYear> = [
         {
@@ -140,6 +162,7 @@ const ReportPage = () => {
                             colorBgContainer: 'none',
                             headerBg: 'none',
                             rowHoverBg: COLOR['50'],
+
                         },
                     },
                 }}
@@ -160,6 +183,7 @@ const ReportPage = () => {
                                 <Card title={
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <span>Báo cáo merchant theo năm</span>
+                                        <Button style={{ marginLeft: 700, color: "white", background: "#1D6F42" }} onClick={() => { exportMerchantByYear() }}>Xuất Excel<FileExcelOutlined /></Button>
                                         <DatePicker
                                             value={year}
                                             onChange={(date) => {
@@ -169,6 +193,7 @@ const ReportPage = () => {
                                             format="YYYY"
                                             allowClear={false}
                                         />
+
                                     </div>
                                 } style={cardStyles}>
                                     {exportByYearError ? (
@@ -185,6 +210,120 @@ const ReportPage = () => {
                                             loading={exportByYearLoading}
                                             rowKey="id"
                                             className="overflow-scroll"
+                                            summary={(pageData) => {
+                                                let totals: Record<string, number> = {
+                                                    thang01: 0, thang02: 0, thang03: 0, thang04: 0, thang05: 0, thang06: 0,
+                                                    thang07: 0, thang08: 0, thang09: 0, thang10: 0, thang11: 0, thang12: 0
+                                                };
+
+                                                pageData.forEach(item => {
+                                                    totals.thang01 += item.thang01 || 0;
+                                                    totals.thang02 += item.thang02 || 0;
+                                                    totals.thang03 += item.thang03 || 0;
+                                                    totals.thang04 += item.thang04 || 0;
+                                                    totals.thang05 += item.thang05 || 0;
+                                                    totals.thang06 += item.thang06 || 0;
+                                                    totals.thang07 += item.thang07 || 0;
+                                                    totals.thang08 += item.thang08 || 0;
+                                                    totals.thang09 += item.thang09 || 0;
+                                                    totals.thang10 += item.thang10 || 0;
+                                                    totals.thang11 += item.thang11 || 0;
+                                                    totals.thang12 += item.thang12 || 0;
+                                                });
+
+                                                return (
+                                                    <Table.Summary.Row>
+                                                        <Table.Summary.Cell index={0}><b>Tổng cộng</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={1}><b>{totals.thang01}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={2}><b>{totals.thang02}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={3}><b>{totals.thang03}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={4}><b>{totals.thang04}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={5}><b>{totals.thang05}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={6}><b>{totals.thang06}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={7}><b>{totals.thang07}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={8}><b>{totals.thang08}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={9}><b>{totals.thang09}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={10}><b>{totals.thang10}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={11}><b>{totals.thang11}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={12}><b>{totals.thang12}</b></Table.Summary.Cell>
+                                                    </Table.Summary.Row>
+                                                );
+                                            }}
+                                        />
+                                    )}
+                                </Card>
+                            </Col>
+
+                            <Col lg={24}>
+                                <Card title={
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span>Báo cáo merchant theo năm</span>
+                                        <Button style={{ marginLeft: 700, color: "white", background: "#1D6F42" }} onClick={() => { exportMerchantByYear() }}>Xuất Excel<FileExcelOutlined /></Button>
+                                        <DatePicker
+                                            value={year}
+                                            onChange={(date) => {
+                                                if (date) setYear(date);
+                                            }}
+                                            picker="year"
+                                            format="YYYY"
+                                            allowClear={false}
+                                        />
+
+                                    </div>
+                                } style={cardStyles}>
+                                    {exportByYearError ? (
+                                        <Alert
+                                            message="Error"
+                                            description={exportByYearError.toString()}
+                                            type="error"
+                                            showIcon
+                                        />
+                                    ) : (
+                                        <Table
+                                            columns={PRODUCTS_COLUMNS}
+                                            dataSource={exportByYear}
+                                            loading={exportByYearLoading}
+                                            rowKey="id"
+                                            className="overflow-scroll"
+                                            summary={(pageData) => {
+                                                let totals: Record<string, number> = {
+                                                    thang01: 0, thang02: 0, thang03: 0, thang04: 0, thang05: 0, thang06: 0,
+                                                    thang07: 0, thang08: 0, thang09: 0, thang10: 0, thang11: 0, thang12: 0
+                                                };
+
+                                                pageData.forEach(item => {
+                                                    totals.thang01 += item.thang01 || 0;
+                                                    totals.thang02 += item.thang02 || 0;
+                                                    totals.thang03 += item.thang03 || 0;
+                                                    totals.thang04 += item.thang04 || 0;
+                                                    totals.thang05 += item.thang05 || 0;
+                                                    totals.thang06 += item.thang06 || 0;
+                                                    totals.thang07 += item.thang07 || 0;
+                                                    totals.thang08 += item.thang08 || 0;
+                                                    totals.thang09 += item.thang09 || 0;
+                                                    totals.thang10 += item.thang10 || 0;
+                                                    totals.thang11 += item.thang11 || 0;
+                                                    totals.thang12 += item.thang12 || 0;
+                                                });
+
+                                                return (
+                                                    <Table.Summary.Row>
+                                                        <Table.Summary.Cell index={0}><b>Tổng cộng</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={1}><b>{totals.thang01}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={2}><b>{totals.thang02}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={3}><b>{totals.thang03}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={4}><b>{totals.thang04}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={5}><b>{totals.thang05}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={6}><b>{totals.thang06}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={7}><b>{totals.thang07}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={8}><b>{totals.thang08}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={9}><b>{totals.thang09}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={10}><b>{totals.thang10}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={11}><b>{totals.thang11}</b></Table.Summary.Cell>
+                                                        <Table.Summary.Cell index={12}><b>{totals.thang12}</b></Table.Summary.Cell>
+                                                    </Table.Summary.Row>
+                                                );
+                                            }}
                                         />
                                     )}
                                 </Card>

@@ -34,5 +34,11 @@ export const callSearchMerchants = (query: string) => {
 }
 
 export const callReportMerchantByYear = (year: string) => {
-    return axios.get<IBackendRes<IMerchantByYear[]>>(`/api/v1/merchants/summary-transaction-by-merchant?${year}`)
+    return axios.get<IBackendRes<IMerchantByYear[]>>(`/api/v1/merchants/count-merchant-by-year?year=${year}`)
 }
+
+export const callExportMerchantByYear = (year: string) => {
+    return axios.get(`/api/v1/merchants/export-merchant-year?year=${year}`, {
+        responseType: "blob",
+    });
+};
