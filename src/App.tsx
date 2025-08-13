@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import viVN from 'antd/es/locale/vi_VN';
 import MerchantPage from "./page/merchant";
+import MccPage from "./page/mcc";
 
 
 export default function App() {
@@ -19,6 +20,11 @@ export default function App() {
           index: true, element:
             <MerchantPage />
         },
+        {
+          path: "mcc",
+          element:
+            <MccPage />
+        }
       ],
     },
 

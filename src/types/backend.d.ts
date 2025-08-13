@@ -71,3 +71,10 @@ export interface IMerchant {
     createdBy: string;
     updatedBy?: string;
 }
+
+export interface IMcc { 
+    code: string;
+    description: string;
+    descriptionEn?: string;
+    isActive: boolean;   
+}

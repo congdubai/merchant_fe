@@ -39,6 +39,7 @@ const LayoutAdmin = () => {
         const fixedMenu = [
             { label: <Link to='/admin'>Quản lý Merchant</Link>, key: '/admin', icon: <HomeOutlined /> },
             { label: <Link to='/admin/user'>Quản lý giao dịch</Link>, key: '/admin/user', icon: <UserOutlined /> },
+            { label: <Link to='/admin/mcc'>Quản lý Mcc</Link>, key: '/admin/mcc', icon: <BankOutlined />},
 
         ];
         setMenuItems(fixedMenu);
