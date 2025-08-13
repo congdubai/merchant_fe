@@ -1,6 +1,25 @@
 import axios from 'config/axios-customize';
 import type { IAccount, IBackendRes, IGetAccount, IMerchant, IMerchantByYear, IModelPaginate, IUser } from "../types/backend"
 
+
+/**
+ *
+Module auth
+ */
+
+export const sendOTP = (email: string) => {
+    return axios.post<IBackendRes<IUser>>('/api/v1/auth/register', { email })
+}
+export const registerAPI = (fullName: string, email: string, password: string, otp: string, confirmPassword: string) => {
+    return axios.post<IBackendRes<IUser>>('/api/v1/auth/otp/register', { fullName, email, password, otp, confirmPassword })
+}
+
+export const loginAPI = (username: string, password: string) => {
+    console.log("đã chạy vô đây chơi api", username, password);
+    return axios.post<IBackendRes<IUser>>('/api/v1/auth/login', { username, password })
+}
+
+
 export const callRegister = (name: string, email: string, password: string, age: number, gender: string, address: string) => {
     return axios.post<IBackendRes<IUser>>('/api/v1/auth/register', { name, email, password, age, gender, address })
 }

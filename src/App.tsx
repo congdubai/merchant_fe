@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import viVN from 'antd/es/locale/vi_VN';
 import MerchantPage from "./page/admin/merchant";
 import ReportPage from "./page/admin/report";
+import LoginPage from "./page/auth/login";
 
 
 export default function App() {
@@ -27,7 +28,10 @@ export default function App() {
         },
       ],
     },
-
+    {
+      path: "/",
+      element: <LoginPage />,
+    }
   ]);
 
   return (
