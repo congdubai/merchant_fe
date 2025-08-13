@@ -57,7 +57,7 @@ export interface IMerchant {
     merchantId: string;
     accountNo: string;
     fullName: string;
-    short_name: string;
+    shortName: string;
     mcc: string;
     city: string;
     location: string;

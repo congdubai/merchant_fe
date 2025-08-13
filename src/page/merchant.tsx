@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Space } from "antd";
+import { Button, notification, Popconfirm, Space } from "antd";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import type { IMerchant } from "../types/backend";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
@@ -9,7 +9,6 @@ import { sfLike } from "spring-filter-query-builder";
 import queryString from "query-string";
 import dayjs from "dayjs";
 import { fetchMerchant } from "../redux/slice/merchantSlide";
-
 
 const MerchantPage = () => {
     const [openModal, setOpenModnpm] = useState<boolean>(false);
@@ -26,9 +25,16 @@ const MerchantPage = () => {
         tableRef?.current?.reload();
     }
 
+    const test = () => {
+        notification.error({
+            message: 'Có lỗi xảy ra',
+            description: "test"
+        });
+    }
+
     const columns: ProColumns<IMerchant>[] = [
         {
-            title: 'Id',
+            title: 'MerchantId',
             dataIndex: 'merchantId',
             width: 100,
             render: (text, record, index, action) => {
@@ -41,7 +47,6 @@ const MerchantPage = () => {
                     </a>
                 )
             },
-            hideInSearch: true,
         },
         {
             title: 'Số TK',
@@ -54,15 +59,90 @@ const MerchantPage = () => {
             hideInSearch: true,
         },
         {
+            title: 'Viết tắt',
+            dataIndex: 'shortName',
+            hideInSearch: true,
+        },
+        {
+            title: 'Mã MCC',
+            dataIndex: 'mcc',
+            hideInSearch: true,
+        },
+        {
+            title: 'Thành phố',
+            dataIndex: 'city',
+            hideInSearch: true,
+        },
+        {
+            title: 'Địa chỉ',
+            dataIndex: 'location',
+            hideInSearch: true,
+        },
+        {
+            title: 'Điện thoại',
+            dataIndex: 'phoneNo',
+            hideInSearch: true,
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            hideInSearch: true,
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            hideInSearch: true,
+        },
+        {
+            title: 'Mã CN',
+            dataIndex: 'branchCode',
+            hideInSearch: true,
+        },
+        {
             title: 'Ngày mở',
-            dataIndex: 'createdAt',
-            width: 200,
+            dataIndex: 'openDate',
             sorter: true,
             render: (text, record, index, action) => {
                 return (
                     <>{record.openDate ? dayjs(record.openDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
                 )
             },
+            hideInSearch: true,
+        },
+        {
+            title: 'Ngày đóng',
+            dataIndex: 'closeDate',
+            sorter: true,
+            render: (text, record, index, action) => {
+                return (
+                    <>{record.openDate ? dayjs(record.openDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
+                )
+            },
+            hideInSearch: true,
+        },
+        {
+            title: 'Ngày Sửa',
+            dataIndex: 'updatedAt',
+            sorter: true,
+            render: (text, record, index, action) => {
+                return (
+                    <>{record.openDate ? dayjs(record.openDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
+                )
+            },
+            hideInSearch: true,
+        },
+        {
+            title: 'Tạo bởi',
+            dataIndex: 'createdBy',
+            hideInSearch: true,
+        },
+        {
+            title: 'Sửa bởi',
+            dataIndex: 'updatedBy',
             hideInSearch: true,
         },
         {
@@ -80,6 +160,7 @@ const MerchantPage = () => {
                         type=""
                         onClick={() => {
                             setDataInit(entity);
+                            test();
                         }}
                     />
                     <Popconfirm
@@ -111,7 +192,7 @@ const MerchantPage = () => {
             filter: ""
         }
 
-        if (clone.name) q.filter = `${sfLike("name", clone.name)}`;
+        if (clone.merchantId) q.filter = `${sfLike("merchantId", clone.merchantId)}`;
 
         if (!q.filter) delete q.filter;
 

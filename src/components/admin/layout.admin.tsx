@@ -17,7 +17,7 @@ import {
     ReconciliationOutlined,
     HeartTwoTone,
 } from '@ant-design/icons';
-import { Layout, Menu,  Button } from 'antd';
+import { Layout, Menu, Button } from 'antd';
 import { Outlet, useLocation } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
@@ -37,19 +37,8 @@ const LayoutAdmin = () => {
     useEffect(() => {
 
         const fixedMenu = [
-            { label: <Link to='/admin'>Trang chủ</Link>, key: '/admin', icon: <HomeOutlined /> },
-            { label: <Link to='/admin/user'>Quản lý người dùng</Link>, key: '/admin/user', icon: <UserOutlined /> },
-            { label: <Link to='/admin/role'>Quản lý vai trò</Link>, key: '/admin/role', icon: <ClusterOutlined /> },
-            { label: <Link to='/admin/category'>Quản lý danh mục</Link>, key: '/admin/category', icon: <BarsOutlined /> },
-            { label: <Link to='/admin/product'>Quản lý sản phẩm</Link>, key: '/admin/product', icon: <SkinOutlined /> },
-            { label: <Link to='/admin/productDetail'>Quản lý chi tiết sản phẩm</Link>, key: '/admin/productDetail', icon: <ReconciliationOutlined /> },
-            { label: <Link to='/admin/color'>Quản lý màu sắc</Link>, key: '/admin/color', icon: <FormatPainterOutlined /> },
-            { label: <Link to='/admin/size'>Quản lý kích thước</Link>, key: '/admin/size', icon: <ApiOutlined /> },
-            { label: <Link to='/admin/discount'>Quản lý giảm giá</Link>, key: '/admin/discount', icon: <TagsOutlined /> },
-            { label: <Link to='/admin/order'>Quản lý đơn hàng</Link>, key: '/admin/order', icon: <ShoppingOutlined /> },
-            { label: <Link to='/admin/chat'>Nhắn tin</Link>, key: '/admin/chat', icon: <AliwangwangOutlined /> },
-            { label: <Link to='/admin/export'>Thống kê</Link>, key: '/admin/export', icon: <ScheduleOutlined /> },
-
+            { label: <Link to='/admin'>Quản lý Merchant</Link>, key: '/admin', icon: <HomeOutlined /> },
+            { label: <Link to='/admin/user'>Quản lý giao dịch</Link>, key: '/admin/user', icon: <UserOutlined /> },
 
         ];
         setMenuItems(fixedMenu);
