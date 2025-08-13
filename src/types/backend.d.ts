@@ -1,5 +1,5 @@
 export interface IBackendRes<T> {
-    message: errorDesc;
+    errorDesc: errorDesc;
     errorCode: number | string;
     data?: T;
 }
@@ -51,6 +51,7 @@ export interface IUser {
     deletedAt?: boolean | null;
     createdAt?: string;
     updatedAt?: string;
+    access_token?: string;
 }
 
 export interface IMerchant {
