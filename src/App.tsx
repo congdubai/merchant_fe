@@ -3,7 +3,8 @@ import LayoutAdmin from "./components/admin/layout.admin";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import viVN from 'antd/es/locale/vi_VN';
-import MerchantPage from "./page/merchant";
+import MerchantPage from "./page/admin/merchant";
+import ReportPage from "./page/admin/report";
 
 
 export default function App() {
@@ -18,6 +19,11 @@ export default function App() {
         {
           index: true, element:
             <MerchantPage />
+        },
+        {
+          path: "report",
+          element:
+            <ReportPage />
         },
       ],
     },

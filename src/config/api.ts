@@ -1,5 +1,5 @@
 import axios from 'config/axios-customize';
-import type { IAccount, IBackendRes, IGetAccount, IMerchant, IModelPaginate, IUser } from "../types/backend"
+import type { IAccount, IBackendRes, IGetAccount, IMerchant, IMerchantByYear, IModelPaginate, IUser } from "../types/backend"
 
 export const callRegister = (name: string, email: string, password: string, age: number, gender: string, address: string) => {
     return axios.post<IBackendRes<IUser>>('/api/v1/auth/register', { name, email, password, age, gender, address })
@@ -31,4 +31,8 @@ export const callFetchMerchants = (query: string) => {
 
 export const callSearchMerchants = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<IMerchant>>>(`/api/v1/merchants/search?${query}`)
+}
+
+export const callReportMerchantByYear = (year: string) => {
+    return axios.get<IBackendRes<IMerchantByYear[]>>(`/api/v1/merchants/summary-transaction-by-merchant?${year}`)
 }

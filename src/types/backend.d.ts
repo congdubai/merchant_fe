@@ -71,3 +71,19 @@ export interface IMerchant {
     createdBy: string;
     updatedBy?: string;
 }
+
+export interface IMerchantByYear {
+    status: string;
+    thang01: number;
+    thang02: number;
+    thang03: number;
+    thang04: number;
+    thang05: number;
+    thang06: number;
+    thang07: number;
+    thang08: number;
+    thang09: number;
+    thang10: number;
+    thang11: number;
+    thang12: number;
+}

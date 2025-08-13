@@ -1,6 +1,6 @@
 import { Button, notification, Popconfirm, Space } from "antd";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import type { IMerchant } from "../types/backend";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import type { IMerchant } from "../../types/backend";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { useRef, useState } from "react";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
@@ -8,7 +8,7 @@ import DataTable from "@/components/share/data-table";
 import { sfLike } from "spring-filter-query-builder";
 import queryString from "query-string";
 import dayjs from "dayjs";
-import { fetchMerchant, searchhMerchant } from "../redux/slice/merchantSlide";
+import { fetchMerchant, searchhMerchant } from "../../redux/slice/merchantSlide";
 import { callSearchMerchants } from "@/config/api";
 
 const MerchantPage = () => {
@@ -256,7 +256,7 @@ const MerchantPage = () => {
         <div>
             <DataTable<IMerchant>
                 actionRef={tableRef}
-                headerTitle="Danh sách kích thước"
+                headerTitle="Danh sách Merchant"
                 rowKey="merchantId"
                 loading={isFetching}
                 columns={columns}
