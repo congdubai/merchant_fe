@@ -76,7 +76,7 @@ export interface IMcc {
     code: string;
     description: string;
     descriptionEn?: string;
-    isActive: boolean;   
+    active: boolean;   
 }
 export interface IMerchantByYear {
     status: string;

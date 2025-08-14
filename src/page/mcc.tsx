@@ -28,14 +28,22 @@ const MccPage = () => {
     
     const handleDeleteMcc = async (code: string | undefined) => {
         if (code) {
-            const res = await callDeleteMcc(code);
-            if (res?.data) {
-                message.success('Xóa MCC thành công');
-                reloadTable();
-            } else {
+            try {
+                const res = await callDeleteMcc(code);
+                // Backend trả về chuỗi, kiểm tra xem có phải là string không
+                if (typeof res.data === 'string') {
+                    message.success(res.data); // Hiển thị thông báo từ backend
+                    reloadTable();
+                } else {
+                    // Fallback nếu API trả về cái gì đó khác
+                    message.success("Xóa thành công!");
+                    reloadTable();
+                }
+            } catch (error: any) {
+                const errorMessage = error?.response?.data?.message ?? "Có lỗi không xác định";
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: errorMessage
                 });
             }
         }
@@ -58,7 +66,7 @@ const MccPage = () => {
         },
         {
             title: "Trạng thái",
-            dataIndex: "isActive",
+            dataIndex: "active",
             hideInSearch: true,
             render: (value) => value ? "Hoạt động" : "Ngừng",
             width: 120,

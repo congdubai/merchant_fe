@@ -17,7 +17,7 @@ export const fetchMcc = createAsyncThunk(
     "mcc/fetchMcc",
     async ({ query }: { query: string }) => {
         const res = await callFetchMccs(query);
-        return res; // `res` là toàn bộ cấu trúc JSON lồng nhau
+        return res.data; 
     }
 );
 
@@ -46,11 +46,10 @@ export const mccSlice = createSlice({
         });
 
        builder.addCase(fetchMcc.fulfilled, (state, action) => {
-            if (action.payload?.data?.data) { 
-                const actualData = action.payload.data.data;
+            if (action.payload) { 
                 state.isFetching = false;
-                state.meta = actualData.meta;
-                state.result = actualData.result;
+                state.meta = action.payload.meta;
+                state.result = action.payload.result;
             }
         });
     }

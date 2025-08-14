@@ -40,7 +40,7 @@ export const callReportMerchantByYear = (year: string) => {
 Module Mcc
  */
 export const callFetchMccs = (query: string) => {
-    return axios.get(`/api/v1/mcc/getAllMcc?${query}`);
+    return axios.get(`/api/v1/mcc/getAllMcc?${query}`); 
 };
 
 export const callCreateMcc = (data: IMcc) => {
@@ -48,7 +48,7 @@ export const callCreateMcc = (data: IMcc) => {
 }
 
 export const callUpdateMcc = (data: Omit<IMcc, 'code'>, code: string) => {
-    return axios.patch<IBackendRes<IMcc>>(`/api/v1/mcc/updateMcc/${code}`, data);
+    return axios.put<IBackendRes<IMcc>>(`/api/v1/mcc/updateMcc/${code}`, data);
 }
 
 export const callDeleteMcc = (code: string) => {

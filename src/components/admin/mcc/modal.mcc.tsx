@@ -26,38 +26,45 @@ const ModalMcc = (props: IProps) => {
 
     const submitMcc = async (valuesForm: IMcc) => {
     try {
-        const { code, description, descriptionEn, isActive } = valuesForm;
-        let res: any; 
+        let res: any; // res sẽ là toàn bộ phản hồi từ Axios
 
         if (dataInit?.code) {
             // Chế độ UPDATE
-            const mccUpdateData = { description, descriptionEn, isActive };
+            const { description, descriptionEn, active } = valuesForm;
+            const mccUpdateData = { description, descriptionEn, active };
             res = await callUpdateMcc(mccUpdateData, dataInit.code);
         } else {
             // Chế độ CREATE
-            const mccCreate = { code, description, descriptionEn, isActive };
-            res = await callCreateMcc(mccCreate); 
-        } 
+            res = await callCreateMcc(valuesForm);
+        }
 
-        const actualResponse = res.data;
-        // Xử lý chung cho cả CREATE và UPDATE
-        if (actualResponse && actualResponse.errorCode === 0) {
+        // ==========================================================
+        // <<< LOGIC XỬ LÝ THÀNH CÔNG CHUNG CHO CẢ CREATE VÀ UPDATE
+        // Giả định rằng cả hai API đều trả về đối tượng Mcc trực tiếp khi thành công
+        // ==========================================================
+        const resultData = res.data; // Đây là đối tượng IMcc
+
+        if (resultData && resultData.code) {
             notification.success({
-                 message: actualResponse.errorDesc || (dataInit?.code ? 'Cập nhật thành công!' : 'Thêm mới thành công!'),
+                message: dataInit?.code ? 'Cập nhật thành công!' : 'Thêm mới thành công!',
             });
             handleReset();
             reloadTable();
         } else {
-            // Trường hợp API thành công (status 2xx) nhưng có errorCode khác 0
+            // Xảy ra khi API trả về 200 OK nhưng body rỗng hoặc không đúng định dạng
             notification.error({
                 message: 'Thao tác thất bại',
-                description: actualResponse?.errorDesc || "Lỗi không xác định từ API."
+                description: "API không trả về dữ liệu mong đợi."
             });
         }
 
     } catch (error: any) {
         // Xử lý chung cho lỗi HTTP (status 4xx, 5xx)
-        const errorMessage = error?.response?.data?.errorDesc ?? "Có lỗi không xác định";
+        const errorMessage =
+            error?.response?.data?.errorDesc ?? // Tìm 'errorDesc' trước
+            error?.response?.data?.message ??   // Nếu không có thì tìm 'message'
+            "Có lỗi không xác định";
+
         notification.error({
             message: 'Thao tác thất bại',
             description: errorMessage
@@ -112,7 +119,7 @@ const ModalMcc = (props: IProps) => {
                 </Col>
                 <Col span={24}>
                     <ProFormSelect
-                        name="isActive" // <<< Đã khớp với 'isActive' trong IMcc
+                        name="active" 
                         label="Trạng thái"
                         initialValue={true}
                         rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
