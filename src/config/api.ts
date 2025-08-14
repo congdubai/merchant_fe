@@ -1,5 +1,5 @@
 import axios from 'config/axios-customize';
-import type { IAccount, IBackendRes, IGetAccount, IMerchant, IMerchantByYear, IModelPaginate, IUser } from "../types/backend"
+import type { IAccount, IBackendRes, IGetAccount, IMerchant, IMerchantByYear, IModelPaginate, ITransaction, ITransactionSummary, IUser } from "../types/backend"
 
 
 /**
@@ -58,6 +58,31 @@ export const callReportMerchantByYear = (year: string) => {
 
 export const callExportMerchantByYear = (year: string) => {
     return axios.get(`/api/v1/merchants/export-merchant-year?year=${year}`, {
+        responseType: "blob",
+    });
+};
+
+export const callTransactionSummary = (fromDate: string, toDate: string) => {
+    return axios.get<IBackendRes<ITransactionSummary[]>>(`/api/v1/merchants/summary-transaction-by-merchant?fromDate=${fromDate}&toDate=${toDate}`)
+}
+
+/**
+ *
+Module Transaction
+ */
+export const callExportTransactionSummary = (fromDate: string, toDate: string) => {
+    return axios.get(`/api/v1/merchants/export-transactionSummary?fromDate=${fromDate}&toDate=${toDate}`, {
+        responseType: "blob",
+    });
+};
+
+export const callTransactionByMerchant = (merchantId: string, fromDate: string, toDate: string) => {
+    return axios.get<IBackendRes<ITransaction[]>>(`/api/v1/merchants/fetch-transaction/${merchantId}?fromDate=${fromDate}&toDate=${toDate}`)
+
+}
+
+export const callExportTransactionByMerchant = (merchantId: string, fromDate: string, toDate: string) => {
+    return axios.get(`/api/v1/merchants/export-transactionDetail/${merchantId}?fromDate=${fromDate}&toDate=${toDate}`, {
         responseType: "blob",
     });
 };

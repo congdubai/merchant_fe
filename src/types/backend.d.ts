@@ -88,3 +88,24 @@ export interface IMerchantByYear {
     thang11: number;
     thang12: number;
 }
+
+export interface ITransactionSummary {
+    accountNo: string;
+    merchantId: string;
+    shortName: string;
+    successCount: number;
+    failedCount: number;
+    timeoutCount: number;
+    totalCount: number;
+}
+
+export interface ITransaction {
+    coreRef: sting;
+    transactionRef: string;
+    traceNo: string;
+    transactionDate: string;
+    status: string;
+    senderAccount: string;
+    senderBank: string;
+    receiverAccount: string;
+}

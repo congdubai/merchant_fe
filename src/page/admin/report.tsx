@@ -1,15 +1,12 @@
-import { IMerchant, IMerchantByYear } from "@/types/backend";
+import { IMerchant, IMerchantByYear, ITransaction, ITransactionSummary } from "@/types/backend";
 import { CSSProperties, useEffect, useState } from 'react';
-import { Alert, Button, Col, ConfigProvider, DatePicker, Flex, Image, Popover, Row, Space, Table, Tag, TagProps, Typography } from 'antd';
+import { Alert, Button, Col, ConfigProvider, DatePicker, Flex, Image, Input, notification, Popover, Row, Space, Table, Tag, TagProps, Typography } from 'antd';
 import { FileExcelOutlined, StarFilled } from '@ant-design/icons';
-import { ColumnsType } from 'antd/lib/table/interface';
 import dayjs from 'dayjs';
 import { Card } from "./report/Card/Cart";
-import { callExportMerchantByYear, callReportMerchantByYear } from "@/config/api";
-import Ribbon from "antd/es/badge/Ribbon";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import { callExportMerchantByYear, callExportTransactionByMerchant, callExportTransactionSummary, callReportMerchantByYear, callTransactionByMerchant, callTransactionSummary } from "@/config/api";
+import { MERCHANT_COLUMNS, TRANSACTION_COLUMNS, TRANSACTION_SUMMAY_COLUMNS } from "./report/Column"
 const { RangePicker } = DatePicker;
-
 
 export const COLOR = {
     50: '#e0f1ff',
@@ -33,7 +30,28 @@ const ReportPage = () => {
     const [exportByYear, setExportByYear] = useState<IMerchantByYear[]>([]);
     const [exportByYearLoading, setExportByYearLoading] = useState(false);
     const [exportByYearError, setExportByYearError] = useState<any>(null);
+
+    const [transactionSummary, setTransactionSummary] = useState<ITransactionSummary[]>([]);
+    const [transactionSummaryLoading, setTransactionSummaryLoading] = useState(false);
+    const [transactionSummaryError, setTransactionSummaryError] = useState<any>(null);
+
+    const [transaction, setTransaction] = useState<ITransaction[]>([]);
+    const [transactionLoading, setTransactionLoading] = useState(false);
+    const [transactionError, setTransactionError] = useState<any>(null);
+
     const [year, setYear] = useState<dayjs.Dayjs>(dayjs());
+
+    const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs]>([
+        dayjs().startOf('month'),
+        dayjs(),
+    ]);
+
+    const [dateRange1, setDateRange1] = useState<[dayjs.Dayjs, dayjs.Dayjs]>([
+        dayjs().startOf('month'),
+        dayjs(),
+    ]);
+    const [merchantSearch, setMerchantSearch] = useState("");
+    const [merchantId, setMerchantId] = useState("");
 
     useEffect(() => {
         const reportMerchantByYear = async () => {
@@ -49,6 +67,61 @@ const ReportPage = () => {
         };
         reportMerchantByYear();
     }, [year])
+
+
+
+    useEffect(() => {
+        const fetchTransactionSummary = async () => {
+            try {
+                setTransactionSummaryLoading(true);
+
+                const [start, end] = dateRange;
+
+                const res = await callTransactionSummary(
+                    start.startOf('day').format("YYYY-MM-DDTHH:mm:ss"),
+                    end.endOf('day').format("YYYY-MM-DDTHH:mm:ss")
+                );
+
+                setTransactionSummary(res.data!);
+
+            } catch (err: any) {
+                setTransactionSummaryError(err.message || 'Đã có lỗi xảy ra');
+            } finally {
+                setTransactionSummaryLoading(false);
+            }
+        };
+        fetchTransactionSummary();
+    }, [dateRange])
+
+    useEffect(() => {
+        const fetchTransactionbyMerchant = async () => {
+            if (!merchantId) return;
+            try {
+                setTransactionLoading(true);
+                const [start, end] = dateRange1;
+
+                const res = await callTransactionByMerchant(
+                    merchantId,
+                    start.startOf('day').format("YYYY-MM-DDTHH:mm:ss"),
+                    end.endOf('day').format("YYYY-MM-DDTHH:mm:ss")
+                );
+                if (res.errorCode != 200) {
+                    notification.error({
+                        message: 'Có lỗi xảy ra',
+                        description: res.errorDesc
+                    });
+                }
+                setTransaction(res.data!);
+            } catch (err: any) {
+                setTransactionError(err.message || 'Đã có lỗi xảy ra');
+
+            } finally {
+                setTransactionLoading(false);
+            }
+        };
+
+        fetchTransactionbyMerchant();
+    }, [merchantId, dateRange1]);
 
     const exportMerchantByYear = async () => {
         try {
@@ -69,78 +142,82 @@ const ReportPage = () => {
     };
 
 
+    const exportTransactionSummary = async () => {
+        try {
+            const [start, end] = dateRange;
 
-    const PRODUCTS_COLUMNS: ColumnsType<IMerchantByYear> = [
-        {
-            title: "Trạng thái",
-            dataIndex: "status",
-            key: "status",
-        },
-        {
-            title: "Tháng 1",
-            dataIndex: "thang01",
-            key: "thang01",
-        },
-        {
-            title: "Tháng 2",
-            dataIndex: "thang02",
-            key: "thang02",
-        },
-        {
-            title: "Tháng 3",
-            dataIndex: "thang03",
-            key: "thang03",
-        },
-        {
-            title: "Tháng 4",
-            dataIndex: "thang04",
-            key: "thang04",
-        },
-        {
-            title: "Tháng 5",
-            dataIndex: "thang05",
-            key: "thang05",
-        },
-        {
-            title: "Tháng 6",
-            dataIndex: "thang06",
-            key: "thang06",
-        },
-        {
-            title: "Tháng 7",
-            dataIndex: "thang07",
-            key: "thang07",
-        },
-        {
-            title: "Tháng 8",
-            dataIndex: "thang08",
-            key: "thang08",
-        },
-        {
-            title: "Tháng 9",
-            dataIndex: "thang09",
-            key: "thang09",
-        },
-        {
-            title: "Tháng 10",
-            dataIndex: "thang10",
-            key: "thang10",
-        },
-        {
-            title: "Tháng 11",
-            dataIndex: "thang11",
-            key: "thang11",
-        },
-        {
-            title: "Tháng 12",
-            dataIndex: "thang12",
-            key: "thang12",
+            const response = await callExportTransactionSummary(start.startOf('day').format("YYYY-MM-DDTHH:mm:ss"),
+                end.endOf('day').format("YYYY-MM-DDTHH:mm:ss"));
+
+            // Tạo URL từ file blob
+            const url = window.URL.createObjectURL(new Blob([response]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "TransactionSummary_date_" + start.startOf('day').format("YYYY-MM-DDTHH:mm:ss") + "To" +
+                end.endOf('day').format("YYYY-MM-DDTHH:mm:ss") + ".xlsx");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Lỗi khi xuất Excel:", error);
         }
+    };
 
-    ];
+    const exportTransactionByMerchant = async () => {
+        const key = 'exportNotification';
+        try {
+            notification.info({
+                key,
+                message: 'Đang xử lý',
+                description: 'Hệ thống đang xuất báo cáo, vui lòng chờ...',
+                placement: 'topRight',
+                duration: null
+            });
+
+            const [start, end] = dateRange1;
+
+            const res = await callExportTransactionByMerchant(
+                merchantId,
+                start.startOf('day').format("YYYY-MM-DDTHH:mm:ss"),
+                end.endOf('day').format("YYYY-MM-DDTHH:mm:ss")
+            );
+
+            // Đóng thông báo "Đang xử lý"
+            notification.destroy(key);
+
+            // Tải file
+            const url = window.URL.createObjectURL(new Blob([res]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute(
+                "download",
+                `Transaction_date_${start.format("YYYY-MM-DD_HH-mm-ss")}_To_${end.format("YYYY-MM-DD_HH-mm-ss")}.xlsx`
+            );
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            // Đóng thông báo "Đang xử lý"
+            notification.destroy(key);
+
+            notification.error({
+                message: 'Lỗi',
+                description: 'Xuất báo cáo thất bại!',
+                placement: 'topRight',
+            });
+            console.error("Lỗi khi xuất Excel:", error);
+        }
+    };
+
+
+
+
     return (
         <>
-
             <ConfigProvider
                 theme={{
                     token: {
@@ -205,7 +282,7 @@ const ReportPage = () => {
                                         />
                                     ) : (
                                         <Table
-                                            columns={PRODUCTS_COLUMNS}
+                                            columns={MERCHANT_COLUMNS}
                                             dataSource={exportByYear}
                                             loading={exportByYearLoading}
                                             rowKey="id"
@@ -257,73 +334,82 @@ const ReportPage = () => {
                             <Col lg={24}>
                                 <Card title={
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span>Báo cáo merchant theo năm</span>
-                                        <Button style={{ marginLeft: 700, color: "white", background: "#1D6F42" }} onClick={() => { exportMerchantByYear() }}>Xuất Excel<FileExcelOutlined /></Button>
-                                        <DatePicker
-                                            value={year}
-                                            onChange={(date) => {
-                                                if (date) setYear(date);
+                                        <span>Báo cáo số lượng giao dịch</span>
+                                        <Button style={{ marginLeft: 540, color: "white", background: "#1D6F42" }} onClick={() => { exportTransactionSummary() }}>Xuất Excel<FileExcelOutlined /></Button>
+                                        <RangePicker
+                                            value={dateRange}
+                                            onChange={(dates) => {
+                                                if (dates) setDateRange(dates as [dayjs.Dayjs, dayjs.Dayjs]);
                                             }}
-                                            picker="year"
-                                            format="YYYY"
+                                            format="YYYY/MM/DD"
                                             allowClear={false}
                                         />
 
                                     </div>
                                 } style={cardStyles}>
-                                    {exportByYearError ? (
+                                    {transactionSummaryError ? (
                                         <Alert
                                             message="Error"
-                                            description={exportByYearError.toString()}
+                                            description={transactionSummaryError.toString()}
                                             type="error"
                                             showIcon
                                         />
                                     ) : (
                                         <Table
-                                            columns={PRODUCTS_COLUMNS}
-                                            dataSource={exportByYear}
-                                            loading={exportByYearLoading}
+                                            columns={TRANSACTION_SUMMAY_COLUMNS}
+                                            dataSource={transactionSummary}
+                                            loading={transactionSummaryLoading}
                                             rowKey="id"
                                             className="overflow-scroll"
-                                            summary={(pageData) => {
-                                                let totals: Record<string, number> = {
-                                                    thang01: 0, thang02: 0, thang03: 0, thang04: 0, thang05: 0, thang06: 0,
-                                                    thang07: 0, thang08: 0, thang09: 0, thang10: 0, thang11: 0, thang12: 0
-                                                };
+                                        />
+                                    )}
+                                </Card>
+                            </Col>
 
-                                                pageData.forEach(item => {
-                                                    totals.thang01 += item.thang01 || 0;
-                                                    totals.thang02 += item.thang02 || 0;
-                                                    totals.thang03 += item.thang03 || 0;
-                                                    totals.thang04 += item.thang04 || 0;
-                                                    totals.thang05 += item.thang05 || 0;
-                                                    totals.thang06 += item.thang06 || 0;
-                                                    totals.thang07 += item.thang07 || 0;
-                                                    totals.thang08 += item.thang08 || 0;
-                                                    totals.thang09 += item.thang09 || 0;
-                                                    totals.thang10 += item.thang10 || 0;
-                                                    totals.thang11 += item.thang11 || 0;
-                                                    totals.thang12 += item.thang12 || 0;
-                                                });
+                            <Col lg={24}>
+                                <Card title={
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span>Báo cáo giao dịch theo merchant</span>
+                                        <Button style={{ marginLeft: 150, color: "white", background: "#1D6F42" }} onClick={() => { exportTransactionByMerchant() }}>Xuất Excel<FileExcelOutlined /></Button>
+                                        <Input
+                                            placeholder="Nhập mã merchant"
+                                            value={merchantSearch}
+                                            onChange={(e) => setMerchantSearch(e.target.value)}
+                                            style={{ width: 240 }}
+                                        />
 
-                                                return (
-                                                    <Table.Summary.Row>
-                                                        <Table.Summary.Cell index={0}><b>Tổng cộng</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={1}><b>{totals.thang01}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={2}><b>{totals.thang02}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={3}><b>{totals.thang03}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={4}><b>{totals.thang04}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={5}><b>{totals.thang05}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={6}><b>{totals.thang06}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={7}><b>{totals.thang07}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={8}><b>{totals.thang08}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={9}><b>{totals.thang09}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={10}><b>{totals.thang10}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={11}><b>{totals.thang11}</b></Table.Summary.Cell>
-                                                        <Table.Summary.Cell index={12}><b>{totals.thang12}</b></Table.Summary.Cell>
-                                                    </Table.Summary.Row>
-                                                );
+                                        <Button
+                                            style={{ marginLeft: -15, background: "yellow", fontWeight: 500 }}
+                                            onClick={() => setMerchantId(merchantSearch)}
+                                        >
+                                            Tìm kiếm
+                                        </Button>
+
+                                        <RangePicker
+                                            value={dateRange1}
+                                            onChange={(dates) => {
+                                                if (dates) setDateRange1(dates as [dayjs.Dayjs, dayjs.Dayjs]);
                                             }}
+                                            format="YYYY/MM/DD"
+                                            allowClear={false}
+                                        />
+
+                                    </div>
+                                } style={cardStyles}>
+                                    {transactionError ? (
+                                        <Alert
+                                            message="Error"
+                                            description={transactionError.toString()}
+                                            type="error"
+                                            showIcon
+                                        />
+                                    ) : (
+                                        <Table
+                                            columns={TRANSACTION_COLUMNS}
+                                            dataSource={transaction}
+                                            loading={transactionLoading}
+                                            rowKey="id"
+                                            className="overflow-scroll"
                                         />
                                     )}
                                 </Card>
