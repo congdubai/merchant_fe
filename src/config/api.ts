@@ -2,6 +2,10 @@ import axios from 'config/axios-customize';
 import type { IAccount, IBackendRes, IGetAccount, IMerchant, IMerchantByYear, IModelPaginate, ITransaction, ITransactionSummary, IUser } from "../types/backend"
 import dayjs from 'dayjs';
 
+const getDefaultParams = () => ({
+    requestId: `MC-${crypto.randomUUID()}`,
+    requestTime: dayjs().format("YYYY-MM-DD HH:mm:ss"), // GMT+7
+});
 
 /**
  *
@@ -50,26 +54,39 @@ export const callFetchMerchants = (query: string) => {
 }
 
 export const callSearchMerchants = (query: string) => {
-    return axios.get<IBackendRes<IModelPaginate<IMerchant>>>(`/api/v1/merchants/search?${query}`)
+    return axios.get<IBackendRes<IModelPaginate<IMerchant>>>(`/api/v1/merchants/search?${query}`, {
+        params: {
+            ...getDefaultParams()
+        }
+    });
 }
 
 export const callReportMerchantByYear = (year: string) => {
-    return axios.get<IBackendRes<IMerchantByYear[]>>(`/api/v1/merchants/count-merchant-by-year?year=${year}`)
+    return axios.get<IBackendRes<IMerchantByYear[]>>("/api/v1/merchants/count-merchant-by-year", {
+        responseType: "blob",
+        params: {
+            ...getDefaultParams(),
+            year
+        }
+    });
 }
 
 export const callExportMerchantByYear = (year: string) => {
-    return axios.get(`/api/v1/merchants/export-merchant-year?year=${year}`, {
+    return axios.get("/api/v1/merchants/export-merchant-year", {
         responseType: "blob",
+        params: {
+            ...getDefaultParams(),
+            year
+        }
     });
 };
 
 export const callTransactionSummary = (fromDate: string, toDate: string) => {
-    return axios.get<IBackendRes<ITransactionSummary[]>>(`/api/v1/merchants/summary-transaction-by-merchant`, {
+    return axios.get<IBackendRes<ITransactionSummary[]>>("/api/v1/merchants/summary-transaction-by-merchant", {
         params: {
-            requestId: `MC-${crypto.randomUUID()}`,
-            requestTime: dayjs().format("YYYY-MM-DD HH:mm:ss"), // GMT+7
+            ...getDefaultParams(),
             fromDate,
-            toDate
+            toDate,
         }
     })
 }
@@ -79,18 +96,33 @@ export const callTransactionSummary = (fromDate: string, toDate: string) => {
 Module Transaction
  */
 export const callExportTransactionSummary = (fromDate: string, toDate: string) => {
-    return axios.get(`/api/v1/merchants/export-transactionSummary?fromDate=${fromDate}&toDate=${toDate}`, {
+    return axios.get("/api/v1/merchants/export-transactionSummary", {
         responseType: "blob",
+        params: {
+            ...getDefaultParams(),
+            fromDate,
+            toDate,
+        }
     });
 };
 
 export const callTransactionByMerchant = (merchantId: string, fromDate: string, toDate: string) => {
-    return axios.get<IBackendRes<ITransaction[]>>(`/api/v1/merchants/fetch-transaction/${merchantId}?fromDate=${fromDate}&toDate=${toDate}`)
-
+    return axios.get<IBackendRes<ITransaction[]>>(`/api/v1/merchants/fetch-transaction/${merchantId}`, {
+        params: {
+            fromDate,
+            toDate,
+            ...getDefaultParams(),
+        }
+    });
 }
 
 export const callExportTransactionByMerchant = (merchantId: string, fromDate: string, toDate: string) => {
-    return axios.get(`/api/v1/merchants/export-transactionDetail/${merchantId}?fromDate=${fromDate}&toDate=${toDate}`, {
+    return axios.get(`/api/v1/merchants/export-transactionDetail/${merchantId}`, {
         responseType: "blob",
+        params: {
+            fromDate,
+            toDate,
+            ...getDefaultParams(),
+        }
     });
 };
