@@ -38,6 +38,7 @@ const ReportPage = () => {
     const [transaction, setTransaction] = useState<ITransaction[]>([]);
     const [transactionLoading, setTransactionLoading] = useState(false);
     const [transactionError, setTransactionError] = useState<any>(null);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const [year, setYear] = useState<dayjs.Dayjs>(dayjs());
 
@@ -121,7 +122,7 @@ const ReportPage = () => {
         };
 
         fetchTransactionbyMerchant();
-    }, [merchantId, dateRange1]);
+    }, [merchantId, dateRange1, refreshKey]);
 
     const exportMerchantByYear = async () => {
         try {
@@ -380,7 +381,10 @@ const ReportPage = () => {
 
                                         <Button
                                             style={{ marginLeft: -15, background: "yellow", fontWeight: 500 }}
-                                            onClick={() => setMerchantId(merchantSearch)}
+                                            onClick={() => {
+                                                setMerchantId(merchantSearch);
+                                                setRefreshKey(prev => prev + 1);
+                                            }}
                                         >
                                             Tìm kiếm
                                         </Button>
@@ -417,7 +421,7 @@ const ReportPage = () => {
                         </>
 
                     </Row>
-                </div>
+                </div >
             </ConfigProvider >
 
         </>
