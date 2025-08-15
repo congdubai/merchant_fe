@@ -1,5 +1,6 @@
 import axios from 'config/axios-customize';
 import type { IAccount, IBackendRes, IGetAccount, IMerchant, IMerchantByYear, IModelPaginate, ITransaction, ITransactionSummary, IUser } from "../types/backend"
+import dayjs from 'dayjs';
 
 
 /**
@@ -63,7 +64,14 @@ export const callExportMerchantByYear = (year: string) => {
 };
 
 export const callTransactionSummary = (fromDate: string, toDate: string) => {
-    return axios.get<IBackendRes<ITransactionSummary[]>>(`/api/v1/merchants/summary-transaction-by-merchant?fromDate=${fromDate}&toDate=${toDate}`)
+    return axios.get<IBackendRes<ITransactionSummary[]>>(`/api/v1/merchants/summary-transaction-by-merchant`, {
+        params: {
+            requestId: `MC-${crypto.randomUUID()}`,
+            requestTime: dayjs().format("YYYY-MM-DD HH:mm:ss"), // GMT+7
+            fromDate,
+            toDate
+        }
+    })
 }
 
 /**

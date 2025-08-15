@@ -3,6 +3,13 @@ export interface IBackendRes<T> {
     errorCode: number | string;
     data?: T;
 }
+
+export interface IRequestBody<T> {
+    requestId: string;
+    requestTime: string;
+    data?: T;
+}
+
 export interface IModelPaginate<T> {
     meta: {
         page: number;
