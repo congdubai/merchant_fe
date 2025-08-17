@@ -3,16 +3,20 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import type { IMerchant } from "../../types/backend";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { useRef, useState } from "react";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import DataTable from "@/components/share/data-table";
 import { sfLike } from "spring-filter-query-builder";
 import queryString from "query-string";
 import dayjs from "dayjs";
 import { fetchMerchant, searchhMerchant } from "../../redux/slice/merchantSlide";
-import { callSearchMerchants } from "@/config/api";
+import ModalCreateMerchant from "@/components/admin/merchant/model.create.merchant";
+import ModalImportMerchant from "@/components/admin/merchant/modal.import.merchant";
+
 
 const MerchantPage = () => {
-    const [openModal, setOpenModnpm] = useState<boolean>(false);
+    const [openModalCreate, setOpenModalCreate] = useState<boolean>(false);
+    const [openModalImport, setOpenModalImport] = useState<boolean>(false);
+
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
     const [dataInit, setDataInit] = useState<IMerchant | null>(null);
     const tableRef = useRef<ActionType | null>(null);
@@ -24,7 +28,7 @@ const MerchantPage = () => {
 
     const reloadTable = () => {
         tableRef?.current?.reload();
-    }
+    } 
 
     const test = () => {
         notification.error({
@@ -158,7 +162,7 @@ const MerchantPage = () => {
                     <EditOutlined
                         style={{
                             fontSize: 20,
-                            color: '#ffa500',
+                            color: '#ffa500', 
                         }}
                         type=""
                         onClick={() => {
@@ -285,18 +289,36 @@ const MerchantPage = () => {
                     }
                 }
                 rowSelection={false}
-                toolBarRender={(_action, _rows): any => {
-                    return (
+                toolBarRender={() => [
+                    <Space key="main-actions">
                         <Button
                             icon={<PlusOutlined />}
                             type="primary"
+                            onClick={() => setOpenModalCreate(true)}
                         >
                             Thêm mới
                         </Button>
-                    );
-                }}
+                        <Button
+                            icon={<UploadOutlined />}
+                            type="default"
+                            onClick={() => setOpenModalImport(true)}
+                        >
+                            Thêm nhiều
+                        </Button>
+                    </Space>
+                ]}
             />
-
+            
+             <ModalCreateMerchant
+                openModal={openModalCreate}
+                setOpenModal={setOpenModalCreate}
+                reloadTable={reloadTable} 
+            />
+            <ModalImportMerchant
+                openModal={openModalImport}
+                setOpenModal={setOpenModalImport}
+                reloadTable={reloadTable}
+            />
         </div>
     )
 

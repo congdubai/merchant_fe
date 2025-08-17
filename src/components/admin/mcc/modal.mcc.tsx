@@ -7,7 +7,7 @@ import { callCreateMcc, callUpdateMcc } from "@/config/api";
 interface IProps {
     openModal: boolean;
     setOpenModal: (v: boolean) => void;
-    reloadTable: () => void;
+    reloadTable: () => void; 
     dataInit?: IMcc | null;
     setDataInit: (v: any) => void;
 }

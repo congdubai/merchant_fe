@@ -10,7 +10,7 @@ export interface IModelPaginate<T> {
         pages: number;
         total: number;
     },
-    result: T[]
+    result: T[] 
 }
 
 export interface IAccount {

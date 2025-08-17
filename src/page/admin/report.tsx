@@ -46,7 +46,7 @@ const ReportPage = () => {
                 setExportByYearLoading(false);
             }
         };
-    })
+    }) 
 
     const PRODUCTS_COLUMNS: ColumnsType<IMerchantByYear> = [
         {

@@ -35,6 +35,25 @@ export const callSearchMerchants = (query: string) => {
 export const callReportMerchantByYear = (year: string) => {
     return axios.get<IBackendRes<IMerchantByYear[]>>(`/api/v1/merchants/summary-transaction-by-merchant?${year}`)
 }
+
+export const callCreateMerchant = (data : IMerchant) => {
+    return axios.post<IBackendRes<IMerchant>>(`/api/v1/merchant/create`, data)
+}
+
+export const callImportMerchants = (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file); 
+    return axios.post<string>('/api/v1/merchant/import/upload', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
+export const getSampleFileUrl = (): string => {
+    return 'http://localhost:8080/api/v1/merchant/export/sample'; 
+}
+
 /**
  *
 Module Mcc
