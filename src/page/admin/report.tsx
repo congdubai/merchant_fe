@@ -1,12 +1,15 @@
 import { IMerchant, IMerchantByYear, ITransaction, ITransactionSummary } from "@/types/backend";
 import { CSSProperties, useEffect, useState } from 'react';
-import { Alert, Button, Col, ConfigProvider, DatePicker, Flex, Image, Input, notification, Popover, Row, Space, Table, Tag, TagProps, Typography } from 'antd';
 import { FileExcelOutlined, StarFilled } from '@ant-design/icons';
-import dayjs from 'dayjs';
 import { Card } from "./report/Card/Cart";
 import { callExportMerchantByYear, callExportTransactionByMerchant, callExportTransactionSummary, callReportMerchantByYear, callTransactionByMerchant, callTransactionSummary } from "@/config/api";
 import { MERCHANT_COLUMNS, TRANSACTION_COLUMNS, TRANSACTION_SUMMAY_COLUMNS } from "./report/Column"
+import { Alert, Button, Col, ConfigProvider, DatePicker, Flex, Image, Input, notification, Popover, Row, Space, Table, Tag, TagProps, Typography } from 'antd';
+import { ColumnsType } from 'antd/lib/table/interface';
+import dayjs from 'dayjs';
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const { RangePicker } = DatePicker;
+
 
 export const COLOR = {
     50: '#e0f1ff',
@@ -59,6 +62,7 @@ const ReportPage = () => {
             try {
                 setExportByYearLoading(true);
                 const res = await callReportMerchantByYear(year.format("YYYY"));
+
                 setExportByYear(res.data!);
             } catch (err: any) {
                 setExportByYearError(err.message || 'Đã có lỗi xảy ra');
@@ -240,7 +244,6 @@ const ReportPage = () => {
                             colorBgContainer: 'none',
                             headerBg: 'none',
                             rowHoverBg: COLOR['50'],
-
                         },
                     },
                 }}
@@ -271,7 +274,6 @@ const ReportPage = () => {
                                             format="YYYY"
                                             allowClear={false}
                                         />
-
                                     </div>
                                 } style={cardStyles}>
                                     {exportByYearError ? (

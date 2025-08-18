@@ -40,6 +40,8 @@ const LayoutAdmin = () => {
             { label: <Link to='/admin'>Quản lý Merchant</Link>, key: '/admin', icon: <HomeOutlined /> },
             { label: <Link to='/admin/report'>Báo cáo</Link>, key: '/admin/report', icon: <UserOutlined /> },
             { label: <Link to='/admin/user'>Cá nhân</Link>, key: '/admin/user', icon: <UserOutlined /> },
+            { label: <Link to='/admin/mcc'>Quản lý Mcc</Link>, key: '/admin/mcc', icon: <BankOutlined />},
+
         ];
         setMenuItems(fixedMenu);
     }, []);

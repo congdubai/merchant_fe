@@ -1,5 +1,5 @@
 import axios from 'config/axios-customize';
-import type { IAccount, IBackendRes, IGetAccount, IMerchant, IMerchantByYear, IModelPaginate, ITransaction, ITransactionSummary, IUser } from "../types/backend"
+import type { IAccount, IBackendRes, IGetAccount, IMcc, IMerchant, IMerchantByYear, IModelPaginate, ITransaction, ITransactionSummary, IUser } from "../types/backend"
 import dayjs from 'dayjs';
 
 const getDefaultParams = () => ({
@@ -91,6 +91,24 @@ export const callTransactionSummary = (fromDate: string, toDate: string) => {
     })
 }
 
+export const callCreateMerchant = (data: IMerchant) => {
+    return axios.post<IBackendRes<IMerchant>>(`/api/v1/merchant/create`, data)
+}
+
+export const callImportMerchants = (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return axios.post<string>('/api/v1/merchant/import/upload', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
+export const getSampleFileUrl = (): string => {
+    return 'http://localhost:8080/api/v1/merchant/export/sample';
+}
+
 /**
  *
 Module Transaction
@@ -126,3 +144,23 @@ export const callExportTransactionByMerchant = (merchantId: string, fromDate: st
         }
     });
 };
+/**
+ *
+Module Mcc
+ */
+export const callFetchMccs = (query: string) => {
+    return axios.get(`/api/v1/mcc/getAllMcc?${query}`);
+};
+
+export const callCreateMcc = (data: IMcc) => {
+    return axios.post<IBackendRes<IMcc>>('/api/v1/mcc/createMcc', data);
+}
+
+export const callUpdateMcc = (data: Omit<IMcc, 'code'>, code: string) => {
+    return axios.put<IBackendRes<IMcc>>(`/api/v1/mcc/updateMcc/${code}`, data);
+}
+
+export const callDeleteMcc = (code: string) => {
+    return axios.delete<IBackendRes<IMcc>>(`/api/v1/mcc/removeMcc/${code}`);
+};
+

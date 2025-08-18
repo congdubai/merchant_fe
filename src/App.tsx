@@ -6,6 +6,8 @@ import viVN from 'antd/es/locale/vi_VN';
 import MerchantPage from "./page/admin/merchant";
 import ReportPage from "./page/admin/report";
 import LoginPage from "./page/auth/login";
+import MccPage from "./page/mcc";
+
 
 
 export default function App() {
@@ -20,6 +22,11 @@ export default function App() {
         {
           index: true, element:
             <MerchantPage />
+        },
+        {
+          path: "mcc",
+          element:
+            <MccPage />
         },
         {
           path: "report",
