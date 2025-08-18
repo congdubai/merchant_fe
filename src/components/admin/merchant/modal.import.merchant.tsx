@@ -23,11 +23,11 @@ const ModalImportMerchant = (props: IProps) => {
             message.error('Bạn chỉ có thể tải lên file .xlsx!');
             return Upload.LIST_IGNORE; // Bỏ qua file này
         }
-        
+
         // Lưu file đã chọn vào state
         setSelectedFile(file);
         setUploadError(null);
-        
+
         return false; // Rất quan trọng: Ngăn antd tự động upload
     };
 
@@ -36,27 +36,15 @@ const ModalImportMerchant = (props: IProps) => {
             message.error("Vui lòng chọn một file để import!");
             return;
         }
-        setIsLoading(true);
-        setUploadError(null); 
-        try {
-            const res = await callImportMerchants(selectedFile);
-            if (typeof res === 'string' && res) {
-                message.success(res); 
-                handleCancel();
-                reloadTable();
-            } else {
-                message.error("Import thất bại: API không trả về phản hồi hợp lệ.");
-            }
-        } catch (error: any) {
-            const errorData = error?.response?.data;
-            let errorMessage = "Đã có lỗi xảy ra khi upload file.";
-            if (typeof errorData === 'string') errorMessage = errorData;
-            else if (errorData?.message) errorMessage = errorData.message;
-            else if (errorData?.errorDesc) errorMessage = errorData.errorDesc;
-            
-            setUploadError(errorMessage);
-        } finally {
-            setIsLoading(false);
+        setUploadError(null);
+        const res = await callImportMerchants(selectedFile);
+        console.log("check: ", res)
+        if (res.errorCode === 200) {
+            message.success(res.data?.data!);
+            handleCancel();
+            reloadTable();
+        } else {
+            setUploadError(res.errorDesc);
         }
     };
 
@@ -76,9 +64,9 @@ const ModalImportMerchant = (props: IProps) => {
                 <Button key="back" onClick={handleCancel}>
                     Hủy
                 </Button>,
-                <Button 
-                    key="submit" 
-                    type="primary" 
+                <Button
+                    key="submit"
+                    type="primary"
                     loading={isLoading}
                     onClick={handleConfirmImport}
                     disabled={!selectedFile} // Vô hiệu hóa nút nếu chưa chọn file
@@ -88,7 +76,7 @@ const ModalImportMerchant = (props: IProps) => {
             ]}
             maskClosable={false}
         >
-            <Alert 
+            <Alert
                 message="Hướng dẫn"
                 description={
                     <ul style={{ paddingLeft: '20px' }}>
@@ -101,7 +89,7 @@ const ModalImportMerchant = (props: IProps) => {
                 showIcon
                 style={{ marginBottom: 20 }}
             />
-            
+
             <Divider />
 
             <Space size="large" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
@@ -110,11 +98,11 @@ const ModalImportMerchant = (props: IProps) => {
                         Tải file mẫu
                     </Button>
                 </a>
-                
+
                 <Upload
-                   name="file"
+                    name="file"
                     beforeUpload={handleBeforeUpload}
-                    showUploadList={false} 
+                    showUploadList={false}
                     accept=".xlsx"
                     maxCount={1}
                 >
@@ -123,8 +111,8 @@ const ModalImportMerchant = (props: IProps) => {
                     </Button>
                 </Upload>
                 {selectedFile && (
-                    <Tag 
-                        icon={<FileExcelOutlined />} 
+                    <Tag
+                        icon={<FileExcelOutlined />}
                         color="processing"
                         closable
                         onClose={() => setSelectedFile(null)} // Cho phép người dùng xóa file đã chọn

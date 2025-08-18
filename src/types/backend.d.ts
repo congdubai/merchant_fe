@@ -17,7 +17,7 @@ export interface IModelPaginate<T> {
         pages: number;
         total: number;
     },
-    result: T[] 
+    result: T[]
 }
 
 export interface IAccount {
@@ -80,11 +80,11 @@ export interface IMerchant {
     updatedBy?: string;
 }
 
-export interface IMcc { 
+export interface IMcc {
     code: string;
     description: string;
     descriptionEn?: string;
-    active: boolean;   
+    active: boolean;
 }
 export interface IMerchantByYear {
     status: string;
@@ -121,4 +121,8 @@ export interface ITransaction {
     senderAccount: string;
     senderBank: string;
     receiverAccount: string;
+}
+
+export interface IString {
+    data: string;
 }

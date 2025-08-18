@@ -32,7 +32,7 @@ const ModalCreateMerchant = (props: IProps) => {
             // Kiểm tra logic thành công dựa trên errorCode
             if (backendResponse && res.errorCode === 200) { 
                 notification.success({
-                    message: res.message || 'Thêm mới thành công!', 
+                    message: res.errorDesc || 'Thêm mới thành công!', 
                 }); 
                 handleReset(); // Đóng và xóa trắng modal
                 reloadTable(); // Yêu cầu bảng tải lại dữ liệu
@@ -40,7 +40,7 @@ const ModalCreateMerchant = (props: IProps) => {
                 // Xử lý trường hợp API trả về 200 OK nhưng có mã lỗi logic
                 notification.error({
                     message: 'Thao tác thất bại',
-                    description: res?.message || "Lỗi không xác định từ API."
+                    description: res?.errorDesc || "Lỗi không xác định từ API."
                 });
             }
         } catch (error: any) {

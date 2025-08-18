@@ -1,5 +1,5 @@
 import axios from 'config/axios-customize';
-import type { IAccount, IBackendRes, IGetAccount, IMcc, IMerchant, IMerchantByYear, IModelPaginate, ITransaction, ITransactionSummary, IUser } from "../types/backend"
+import type { IAccount, IBackendRes, IGetAccount, IMcc, IMerchant, IMerchantByYear, IModelPaginate, IString, ITransaction, ITransactionSummary, IUser } from "../types/backend"
 import dayjs from 'dayjs';
 
 const getDefaultParams = () => ({
@@ -98,7 +98,7 @@ export const callCreateMerchant = (data: IMerchant) => {
 export const callImportMerchants = (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    return axios.post<string>('/api/v1/merchant/import/upload', formData, {
+    return axios.post<IBackendRes<IString>>('/api/v1/merchant/import/upload', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
