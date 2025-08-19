@@ -92,7 +92,9 @@ export const callTransactionSummary = (fromDate: string, toDate: string) => {
 }
 
 export const callCreateMerchant = (data: IMerchant) => {
-    return axios.post<IBackendRes<IMerchant>>(`/api/v1/merchant/create`, data)
+    return axios.post<IBackendRes<IMerchant>>(`/api/v1/merchant/create`, data, {
+        params: { ...getDefaultParams() } 
+    });
 }
 
 export const callImportMerchants = (file: File) => {
@@ -102,12 +104,19 @@ export const callImportMerchants = (file: File) => {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
+        params: { ...getDefaultParams() } 
     });
 }
 
 export const getSampleFileUrl = (): string => {
     return 'http://localhost:8080/api/v1/merchant/export/sample';
 }
+
+export const callDeleteMerchant = (id: string) => {
+    return axios.delete<IBackendRes<IString>>(`/api/v1/merchant/delete/${id}`, {
+        params: { ...getDefaultParams() }
+    });
+};
 
 /**
  *
@@ -149,18 +158,27 @@ export const callExportTransactionByMerchant = (merchantId: string, fromDate: st
 Module Mcc
  */
 export const callFetchMccs = (query: string) => {
-    return axios.get(`/api/v1/mcc/getAllMcc?${query}`);
+    return axios.get(`/api/v1/mcc/getAllMcc?${query}`, {
+        params: { ...getDefaultParams() } 
+    });
 };
 
 export const callCreateMcc = (data: IMcc) => {
-    return axios.post<IBackendRes<IMcc>>('/api/v1/mcc/createMcc', data);
+    return axios.post<IBackendRes<IMcc>>('/api/v1/mcc/createMcc', data, {
+        params: { ...getDefaultParams() } 
+    });
 }
 
 export const callUpdateMcc = (data: Omit<IMcc, 'code'>, code: string) => {
-    return axios.put<IBackendRes<IMcc>>(`/api/v1/mcc/updateMcc/${code}`, data);
+    return axios.put<IBackendRes<IMcc>>(`/api/v1/mcc/updateMcc/${code}`, data, {
+        params: { ...getDefaultParams() } 
+    });
 }
 
 export const callDeleteMcc = (code: string) => {
-    return axios.delete<IBackendRes<IMcc>>(`/api/v1/mcc/removeMcc/${code}`);
+    // Đối với delete không có body, config là tham số thứ hai
+    return axios.delete<IBackendRes<IMcc>>(`/api/v1/mcc/removeMcc/${code}`, {
+        params: { ...getDefaultParams() }
+    });
 };
 

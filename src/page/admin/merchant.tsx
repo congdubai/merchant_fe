@@ -1,4 +1,4 @@
-import { Button, notification, Popconfirm, Space } from "antd";
+import { Button, message, notification, Popconfirm, Space } from "antd";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import type { IMerchant } from "../../types/backend";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import { fetchMerchant, searchhMerchant } from "../../redux/slice/merchantSlide";
 import ModalCreateMerchant from "@/components/admin/merchant/model.create.merchant";
 import ModalImportMerchant from "@/components/admin/merchant/modal.import.merchant";
+import { callDeleteMerchant } from "@/config/api";
 
 
 const MerchantPage = () => {
@@ -29,6 +30,29 @@ const MerchantPage = () => {
     const reloadTable = () => {
         tableRef?.current?.reload();
     } 
+
+    const handleDeleteMerchant = async (id: string | undefined) => {
+        if (id) {
+            try {
+                const res = await callDeleteMerchant(id);
+                // Backend trả về chuỗi, kiểm tra xem có phải là string không
+                if (typeof res.data?.data === 'string') {
+                    message.success(res.data.data); // Hiển thị thông báo từ backend
+                    reloadTable();
+                } else {
+                    // Fallback nếu API trả về cái gì đó khác
+                    message.success("Xóa thành công!");
+                    reloadTable();
+                }
+            } catch (error: any) {
+                const errorMessage = error?.response?.data?.message ?? "Có lỗi không xác định";
+                notification.error({
+                    message: 'Có lỗi xảy ra',
+                    description: errorMessage
+                });
+            }
+        }
+    }
 
     const test = () => {
         notification.error({
@@ -162,7 +186,7 @@ const MerchantPage = () => {
                     <EditOutlined
                         style={{
                             fontSize: 20,
-                            color: '#ffa500', 
+                            color: '#ffa500',  
                         }}
                         type=""
                         onClick={() => {
@@ -172,8 +196,9 @@ const MerchantPage = () => {
                     />
                     <Popconfirm
                         placement="leftTop"
-                        title={"Xác nhận xóa size"}
-                        description={"Bạn có chắc chắn muốn xóa size này ?"}
+                        title={"Xác nhận xóa Merchant"}
+                        description={"Bạn có chắc chắn muốn xóa Merchanr này ?"}
+                        onConfirm={() => handleDeleteMerchant(entity.merchantId)}
                         okText="Xác nhận"
                         cancelText="Hủy"
                     >
