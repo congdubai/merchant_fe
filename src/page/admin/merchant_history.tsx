@@ -1,25 +1,26 @@
 import { Button, notification, Popconfirm, Space } from "antd";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import type { IMerchant } from "../../types/backend";
+import type { IMerchant, IMerchantHistory } from "../../types/backend";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import DataTable from "@/components/share/data-table";
 import { sfLike } from "spring-filter-query-builder";
 import queryString from "query-string";
 import dayjs from "dayjs";
 import { fetchMerchant, searchhMerchant } from "../../redux/slice/merchantSlide";
-import { callSearchMerchants } from "@/config/api";
+import { callFetchMerchantsHistory, callSearchMerchants } from "@/config/api";
 import ModalUpdateMerchant from "@/components/merchant/ModalUpdateMerchant";
+import { fetchMerchantHistory, searchhMerchantHistory } from "@/redux/slice/merchanthistorySlide";
 
-const MerchantPage = () => {
+const MerchantHistory = () => {
     const [openModal, setOpenModnpm] = useState<boolean>(false);
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
-    const [dataInit, setDataInit] = useState<IMerchant | null>(null);
+    const [dataInit, setDataInit] = useState<IMerchantHistory | null>(null);
     const tableRef = useRef<ActionType | null>(null);
-    const isFetching = useAppSelector(state => state.merchant.isFetching);
-    const meta = useAppSelector(state => state.merchant.meta);
-    const merchants = useAppSelector(state => state.merchant.result);
+    const isFetching = useAppSelector(state => state.merchantHistory.isFetching);
+    const meta = useAppSelector(state => state.merchantHistory.meta);
+    const merchants = useAppSelector(state => state.merchantHistory.result);
 
     const dispatch = useAppDispatch();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
@@ -27,126 +28,59 @@ const MerchantPage = () => {
         tableRef?.current?.reload();
     }
 
-    const test = () => {
-        notification.error({
-            message: 'Có lỗi xảy ra',
-            description: "test"
-        });
-    }
 
-    const columns: ProColumns<IMerchant>[] = [
+    const columns: ProColumns<IMerchantHistory>[] = [
         {
-            title: 'MerchantId',
-            dataIndex: 'merchantId',
+            title: 'id',
+            dataIndex: 'id',
             width: 100,
+            hideInSearch: true,
             render: (text, record, index, action) => {
                 return (
                     <a href="#" onClick={() => {
                         setOpenViewDetail(true);
                         setDataInit(record);
                     }}>
-                        {record.merchantId}
+                        {record.id}
                     </a>
                 )
             },
+        },
+        {
+            title: 'MerchantId',
+            dataIndex: 'merchantId',
+            sorter: true,
         },
         {
             title: 'Số TK',
             dataIndex: 'accountNo',
             sorter: true,
         },
+
         {
-            title: 'Tên',
-            dataIndex: 'fullName',
-            hideInSearch: true,
-        },
-        {
-            title: 'Viết tắt',
-            dataIndex: 'shortName',
-            hideInSearch: true,
-        },
-        {
-            title: 'Mã MCC',
-            dataIndex: 'mcc',
-            hideInSearch: true,
-        },
-        {
-            title: 'Thành phố',
-            dataIndex: 'city',
-            hideInSearch: true,
-        },
-        {
-            title: 'Địa chỉ',
-            dataIndex: 'location',
-            hideInSearch: true,
-        },
-        {
-            title: 'Điện thoại',
-            dataIndex: 'phoneNo',
-            hideInSearch: true,
-        },
-        {
-            title: 'Email',
-            dataIndex: 'email',
-            hideInSearch: true,
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            valueType: 'select',
-            fieldProps: {
-                options: [
-                    { label: 'Active', value: 'Active' },
-                    { label: 'Close', value: 'Close' },
-                ],
-            },
-        },
-        {
-            title: 'Mã CN',
-            dataIndex: 'branchCode',
-            hideInSearch: true,
-        },
-        {
-            title: 'Ngày mở',
-            dataIndex: 'openDate',
+            title: 'Thời gian thay đổi',
+            dataIndex: 'changedAt',
             sorter: true,
             render: (text, record, index, action) => {
                 return (
-                    <>{record.openDate ? dayjs(record.openDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
+                    <>{record.changedAt ? dayjs(record.changedAt).format('DD-MM-YYYY HH:mm:ss') : ""}</>
                 )
             },
             hideInSearch: true,
         },
         {
-            title: 'Ngày đóng',
-            dataIndex: 'closeDate',
-            sorter: true,
-            render: (text, record, index, action) => {
-                return (
-                    <>{record.openDate ? dayjs(record.openDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
-                )
-            },
+            title: 'Người thay đổi',
+            dataIndex: 'changedBy',
             hideInSearch: true,
         },
         {
-            title: 'Ngày Sửa',
-            dataIndex: 'updatedAt',
-            sorter: true,
-            render: (text, record, index, action) => {
-                return (
-                    <>{record.openDate ? dayjs(record.openDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
-                )
-            },
+            title: 'Nội dung thay đổi',
+            dataIndex: 'changeContent',
             hideInSearch: true,
         },
         {
-            title: 'Tạo bởi',
-            dataIndex: 'createdBy',
-            hideInSearch: true,
-        },
-        {
-            title: 'Sửa bởi',
-            dataIndex: 'updatedBy',
+            title: 'Lí do',
+            dataIndex: 'reason',
             hideInSearch: true,
         },
         {
@@ -206,6 +140,8 @@ const MerchantPage = () => {
     }
 
     const buildQuerySearch = (params: any, sort: any, filter: any) => {
+        console.log("params", params);
+        console.log("sort", sort);
         const clone = { ...params };
         const q: any = {
             page: params.current,
@@ -214,16 +150,10 @@ const MerchantPage = () => {
         }
 
         if (clone.merchantId) q.filter = `${sfLike("merchantId", clone.merchantId)}`;
-
         if (clone.accountNo) {
             q.filter = q.filter ?
                 q.filter + " and " + `${sfLike("accountNo", clone.accountNo)}` :
                 `${sfLike("accountNo", clone.accountNo)}`;
-        }
-        if (clone.status) {
-            q.filter = q.filter ?
-                q.filter + " and " + `${sfLike("status", clone.status)}` :
-                `${sfLike("status", clone.status)}`;
         }
 
 
@@ -255,49 +185,38 @@ const MerchantPage = () => {
 
     return (
         <div>
-            <DataTable<IMerchant>
+            <DataTable<IMerchantHistory>
                 actionRef={tableRef}
-                headerTitle="Danh sách Merchant"
-                rowKey="merchantId"
+                headerTitle="Danh sách lịch sử merchant"
+                rowKey="id" 
                 loading={isFetching}
                 columns={columns}
                 dataSource={merchants}
                 request={async (params, sort, filter): Promise<any> => {
-                    const hasSearch = params.merchantId && params.merchantId.trim() || params.accountNo && params.accountNo.trim() ||
-                        params.status && params.status.trim() !== '';
+                    const hasSearch =
+                        (params.merchantId && params.merchantId.trim()) ||
+                        (params.accountNo && params.accountNo.trim());
 
                     if (hasSearch) {
                         const querySearch = buildQuerySearch(params, sort, filter);
-                        await dispatch(searchhMerchant({ query: querySearch }));
+                        await dispatch(searchhMerchantHistory({ query: querySearch }));
                     } else {
                         const queryAll = buildQuery(params, sort, filter);
-                        await dispatch(fetchMerchant({ query: queryAll }));
+                        await dispatch(fetchMerchantHistory({ query: queryAll }));
                     }
                 }}
-
-                scroll={{ x: true }}
-                pagination={
-                    {
-                        current: meta.page,
-                        pageSize: meta.pageSize,
-                        showSizeChanger: true,
-                        total: meta.total,
-                        showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
-                    }
-                }
+                pagination={{
+                    current: meta.page,
+                    pageSize: meta.pageSize,
+                    showSizeChanger: true,
+                    total: meta.total,
+                    showTotal: (total, range) => (
+                        <div>{range[0]}-{range[1]} trên {total} rows</div>
+                    ),
+                }}
                 rowSelection={false}
-                toolBarRender={(_action, _rows): any => {
-                    return (
-                        <Button
-                            icon={<PlusOutlined />}
-                            type="primary"
-                        >
-                            Thêm mới
-                        </Button>
-                    );
-                }}
             />
-            <ModalUpdateMerchant
+            {/* <ModalUpdateMerchant
                 open={isUpdateModalOpen}
                 onCancel={() => {
                     setIsUpdateModalOpen(false);
@@ -305,10 +224,10 @@ const MerchantPage = () => {
                 }}
                 dataInit={dataInit}
                 reloadTable={reloadTable}
-            />
+            /> */}
         </div>
     )
 
 }
 
-export default MerchantPage;
+export default MerchantHistory;

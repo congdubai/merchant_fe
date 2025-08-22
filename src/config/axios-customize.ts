@@ -49,6 +49,7 @@ instance.interceptors.response.use(
         if (error.config && error.response
             && +error.response.status === 401
             && error.config.url !== '/api/v1/auth/login'
+            && error.config.url !== '/api/v1/auth/otp/register'
             && !error.config.headers[NO_RETRY_HEADER]
         ) {
             const access_token = await handleRefreshToken();
@@ -67,12 +68,8 @@ instance.interceptors.response.use(
             && location.pathname.startsWith("/admin")
         ) {
             const message = error?.response?.data?.error ?? "Có lỗi xảy ra, vui lòng login.";
-            notification.error({
-                message: "Phiên đăng nhập hết hạn",
-                description: message
-            });
             //dispatch redux action
-            // store.dispatch(setRefreshTokenAction({ status: true, message }));
+            store.dispatch(setRefreshTokenAction({ status: true, message }));
         }
 
         if (+error.response.status === 403) {
