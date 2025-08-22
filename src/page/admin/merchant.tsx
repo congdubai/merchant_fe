@@ -13,6 +13,8 @@ import ModalCreateMerchant from "@/components/admin/merchant/model.create.mercha
 import ModalImportMerchant from "@/components/admin/merchant/modal.import.merchant";
 import { callDeleteMerchant } from "@/config/api";
 
+import { callSearchMerchants } from "@/config/api";
+import ModalUpdateMerchant from "@/components/merchant/ModalUpdateMerchant";
 
 const MerchantPage = () => {
     const [openModalCreate, setOpenModalCreate] = useState<boolean>(false);
@@ -26,7 +28,7 @@ const MerchantPage = () => {
     const merchants = useAppSelector(state => state.merchant.result);
 
     const dispatch = useAppDispatch();
-
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const reloadTable = () => {
         tableRef?.current?.reload();
     } 
@@ -191,7 +193,7 @@ const MerchantPage = () => {
                         type=""
                         onClick={() => {
                             setDataInit(entity);
-                            test();
+                            setIsUpdateModalOpen(true);
                         }}
                     />
                     <Popconfirm
@@ -342,6 +344,15 @@ const MerchantPage = () => {
             <ModalImportMerchant
                 openModal={openModalImport}
                 setOpenModal={setOpenModalImport}
+                reloadTable={reloadTable}
+            />
+            <ModalUpdateMerchant
+                open={isUpdateModalOpen}
+                onCancel={() => {
+                    setIsUpdateModalOpen(false);
+                    setDataInit(null);
+                }}
+                dataInit={dataInit}
                 reloadTable={reloadTable}
             />
         </div>

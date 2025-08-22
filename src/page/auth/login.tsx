@@ -1,4 +1,6 @@
 import { loginAPI, registerAPI, sendOTP } from '@/config/api';
+import { useAppSelector } from '@/redux/hooks';
+import { setUserLoginInfo } from '@/redux/slice/accountSlide';
 import {
     AlipayCircleOutlined,
     LockOutlined,
@@ -20,7 +22,8 @@ import {
 import { Space, Tabs, message, theme, Typography, notification } from 'antd';
 import type { CSSProperties } from 'react';
 import { useRef, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 type LoginType = 'login' | 'register';
 
@@ -38,6 +41,11 @@ const LoginPage = () => {
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassWord, setLoginPassWord] = useState("");
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+
+
+
     const iconStyles: CSSProperties = {
         marginInlineStart: '8px',
         color: setAlpha(token.colorTextBase, 0.3),
@@ -76,6 +84,8 @@ const LoginPage = () => {
             const res = await loginAPI(username, password);
             if (res?.data?.access_token) {
                 localStorage.setItem('access_token', res.data.access_token);
+                dispatch(setUserLoginInfo(res.data.user))
+                console.log("login success", res.data.user);
                 setLoginPassWord("")
                 setLoginEmail("")
                 message.success('Đăng nhập thành công!');

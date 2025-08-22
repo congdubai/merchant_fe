@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { callFetchAccount } from '../../config/api';
+import { callFetchAccount } from '@/config/api';
 
 // First, create the thunk
 export const fetchAccount = createAsyncThunk(
@@ -15,20 +15,21 @@ interface IState {
     isLoading: boolean;
     isRefreshToken: boolean;
     errorRefreshToken: string;
-    redirectPath?: string;
     user: {
         id: string;
         email: string;
         name: string;
-        avatar?: string;
         role: {
             id?: string;
             name?: string;
+            permissions?: {
+                id: string;
+                name: string;
+                apiPath: string;
+                method: string;
+                module: string;
+            }[]
         }
-        phone?: number;
-        age?: number;
-        address?: string;
-        gender?: string;
     };
     activeMenu: string;
 }
@@ -45,6 +46,7 @@ const initialState: IState = {
         role: {
             id: "",
             name: "",
+            permissions: [],
         },
     },
 
@@ -70,6 +72,7 @@ export const accountSlide = createSlice({
             state.user.role = action?.payload?.role;
 
             if (!action?.payload?.user?.role) state.user.role = {};
+            state.user.role.permissions = action?.payload?.role?.permissions ?? [];
         },
         setLogoutAction: (state, action) => {
             localStorage.removeItem('access_token');
@@ -81,18 +84,13 @@ export const accountSlide = createSlice({
                 role: {
                     id: "",
                     name: "",
+                    permissions: [],
                 },
             }
         },
         setRefreshTokenAction: (state, action) => {
             state.isRefreshToken = action.payload?.status ?? false;
             state.errorRefreshToken = action.payload?.message ?? "";
-        }
-        , setRedirectPath: (state, action) => {
-            state.redirectPath = action.payload;
-        },
-        clearRedirectPath: (state) => {
-            state.redirectPath = '';
         }
 
     },
@@ -114,6 +112,7 @@ export const accountSlide = createSlice({
                 state.user.name = action.payload.user?.name;
                 state.user.role = action?.payload?.user?.role;
                 if (!action?.payload?.user?.role) state.user.role = {};
+                state.user.role.permissions = action?.payload?.user?.role?.permissions ?? [];
             }
         })
 
@@ -129,8 +128,7 @@ export const accountSlide = createSlice({
 });
 
 export const {
-    setActiveMenu, setUserLoginInfo, setLogoutAction, setRefreshTokenAction, setRedirectPath,
-    clearRedirectPath
+    setActiveMenu, setUserLoginInfo, setLogoutAction, setRefreshTokenAction
 } = accountSlide.actions;
 
 export default accountSlide.reducer;

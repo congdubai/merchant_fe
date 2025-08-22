@@ -29,14 +29,17 @@ export interface IAccount {
         role: {
             id: string;
             name: string;
+            permissions: {
+                id: string;
+                name: string;
+                apiPath: string;
+                method: string;
+                module: string;
+            }[]
         }
-        age?: number;
-        address?: string;
-        avatar?: string;
-        phone?: number;
-        gender?: string;
     }
 }
+
 export interface IGetAccount extends Omit<IAccount, "access_token"> { }
 
 
@@ -45,20 +48,54 @@ export interface IUser {
     name: string;
     email: string;
     password?: string;
-    avatar: string;
+    //avatar: string;
     age?: number;
     gender: string;
     phone?: number;
     address?: string;
     role?: {
         id: string;
-        name: string;
+        name?: string;
     }
     createdBy?: string;
     deletedAt?: boolean | null;
     createdAt?: string;
     updatedAt?: string;
     access_token?: string;
+
+}
+export interface IRole {
+    id?: string;
+    name: string;
+    description: string;
+    active: boolean;
+    permissions: IPermission[] | string[];
+
+    createdBy?: string;
+    isDeleted?: boolean;
+    deletedAt?: boolean | null;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface IAccount {
+    access_token: string;
+    user: {
+        id: string;
+        email: string;
+        name: string;
+        role: {
+            id: string;
+            name: string;
+            permissions: {
+                id: string;
+                name: string;
+                apiPath: string;
+                method: string;
+                module: string;
+            }[]
+        }
+    }
 }
 
 export interface IMerchant {
@@ -78,6 +115,23 @@ export interface IMerchant {
     updatedAt?: string;
     createdBy: string;
     updatedBy?: string;
+    reason: string;
+}
+export interface IMerchantHistory {
+
+    id: number;
+
+    merchantId: string;
+
+    accountNo: string;
+
+    changedAt: string;
+
+    changedBy: string;
+
+    changeContent: string;
+
+    reason: string;
 }
 
 export interface IMcc {
@@ -125,4 +179,33 @@ export interface ITransaction {
 
 export interface IString {
     data: string;
+}
+export interface IPermission {
+    id?: string;
+    name?: string;
+    apiPath?: string;
+    method?: string;
+    module?: string;
+
+    createdBy?: string;
+    isDeleted?: boolean;
+    deletedAt?: boolean | null;
+    createdAt?: string;
+    updatedAt?: string;
+
+}
+
+export interface IPermission {
+    id?: string;
+    name?: string;
+    apiPath?: string;
+    method?: string;
+    module?: string;
+
+    createdBy?: string;
+    isDeleted?: boolean;
+    deletedAt?: boolean | null;
+    createdAt?: string;
+    updatedAt?: string;
+
 }
