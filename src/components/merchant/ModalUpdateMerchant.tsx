@@ -118,7 +118,7 @@ const ModalUpdateMerchant = ({ open, onCancel, dataInit, reloadTable }: IProps) 
                     <Input />
                 </Form.Item>
 
-                <Form.Item
+                {/* <Form.Item
                     label="Mã MCC"
                     name="mcc"
                     rules={[
@@ -131,13 +131,21 @@ const ModalUpdateMerchant = ({ open, onCancel, dataInit, reloadTable }: IProps) 
                         <Option value="5411">5411 - Grocery Stores, Supermarkets</Option>
                         <Option value="5912">5912 - Drug Stores, Pharmacies</Option>
                     </Select>
+                </Form.Item> */}
+
+                <Form.Item
+                    label="Mã MCC"
+                    name="mcc"
+                    rules={[{ required: true, message: 'MCC không được để trống'}]}
+                >
+                    <Input />
                 </Form.Item>
 
                 {/* SỬA: Phần địa chỉ */}
                 <ProForm.Item label="Địa chỉ">
                     <AddressSelector
                         // SỬA: Lấy giá trị từ state thay vì getFieldValue
-                         value={addressValue.map(v => v ?? '') as [string, string]}                        onChange={(value: string[]) => {
+                        value={addressValue.map(v => v ?? '') as [string, string]} onChange={(value: string[]) => {
                             const newCity = value[0] || null;
                             const newLocation = value[1] || null;
                             // SỬA: Cập nhật cả state và form fields

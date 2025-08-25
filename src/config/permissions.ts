@@ -37,6 +37,12 @@ export const ALL_PERMISSIONS = {
         UPDATE: { method: "PUT", apiPath: '/api/v1/users', module: "USERS" },
         DELETE: { method: "DELETE", apiPath: '/api/v1/users/{id}', module: "USERS" },
     },
+    MCC: {
+        GET_ALL: { method: "GET", apiPath: "/api/v1/mcc/getAllMcc", module: "MCC" },
+        CREATE: { method: "POST", apiPath: "/api/v1/mcc/createMcc", module: "MCC" },
+        UPDATE: { method: "PUT", apiPath: "/api/v1/mcc/updateMcc/{code}", module: "MCC" },
+        DELETE: { method: "DELETE", apiPath: "/api/v1/mcc/removeMcc/{code}", module: "MCC" },
+    }
 }
 
 export const ALL_MODULES = {
@@ -46,5 +52,6 @@ export const ALL_MODULES = {
     PERMISSIONS: 'PERMISSIONS',
     ROLES: 'ROLES',
     USERS: 'USERS',
-    SUBSCRIBERS: 'SUBSCRIBERS'
+    SUBSCRIBERS: 'SUBSCRIBERS',
+    MCC: 'MCC'
 }

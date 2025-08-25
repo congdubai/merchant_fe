@@ -225,7 +225,8 @@ const UserPage = () => {
                     }
                     rowSelection={false}
                     toolBarRender={(_action, _rows): any => {
-                        return (
+                        
+                            return (
                             <Button
                                 icon={<PlusOutlined />}
                                 type="primary"
@@ -233,7 +234,8 @@ const UserPage = () => {
                             >
                                 Thêm mới
                             </Button>
-                        );
+                            );
+                       
                     }}
                 />
             </Access>

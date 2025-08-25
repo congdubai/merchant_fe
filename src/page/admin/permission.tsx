@@ -201,7 +201,7 @@ const PermissionPage = () => {
 
         //mặc định sort theo updatedAt
         if (Object.keys(sortBy).length === 0) {
-            temp = `${temp}&sort=updatedAt,desc`;
+            temp = `${temp}&sort=id,asc`;
         } else {
             temp = `${temp}&${sortBy}`;
         }

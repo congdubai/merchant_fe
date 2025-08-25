@@ -1,5 +1,5 @@
 import axios from 'config/axios-customize';
-import type { IAccount, IBackendRes, IGetAccount, IMcc, IMerchant, IMerchantByYear, IMerchantHistory,IString, IModelPaginate, IPermission, IRole, ITransaction, ITransactionSummary, IUser } from "../types/backend"
+import type { IAccount, IBackendRes, IGetAccount, IMcc, IMerchant, IMerchantByYear, IMerchantHistory, IString, IModelPaginate, IPermission, IRole, ITransaction, ITransactionSummary, IUser } from "../types/backend"
 import dayjs from 'dayjs';
 const getDefaultParams = () => ({
     requestId: `MC-${crypto.randomUUID()}`,
@@ -62,7 +62,6 @@ export const callSearchMerchants = (query: string) => {
 
 export const callReportMerchantByYear = (year: string) => {
     return axios.get<IBackendRes<IMerchantByYear[]>>("/api/v1/merchants/count-merchant-by-year", {
-        responseType: "blob",
         params: {
             ...getDefaultParams(),
             year
@@ -118,7 +117,7 @@ export const callFetchMerchantsHistory = (query: string) => {
 
 export const callCreateMerchant = (data: IMerchant) => {
     return axios.post<IBackendRes<IMerchant>>(`/api/v1/merchant/create`, data, {
-        params: { ...getDefaultParams() } 
+        params: { ...getDefaultParams() }
     });
 }
 
@@ -129,7 +128,7 @@ export const callImportMerchants = (file: File) => {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
-        params: { ...getDefaultParams() } 
+        params: { ...getDefaultParams() }
     });
 }
 
@@ -184,19 +183,19 @@ Module Mcc
  */
 export const callFetchMccs = (query: string) => {
     return axios.get(`/api/v1/mcc/getAllMcc?${query}`, {
-        params: { ...getDefaultParams() } 
+        params: { ...getDefaultParams() }
     });
 };
 
 export const callCreateMcc = (data: IMcc) => {
     return axios.post<IBackendRes<IMcc>>('/api/v1/mcc/createMcc', data, {
-        params: { ...getDefaultParams() } 
+        params: { ...getDefaultParams() }
     });
 }
 
 export const callUpdateMcc = (data: Omit<IMcc, 'code'>, code: string) => {
     return axios.put<IBackendRes<IMcc>>(`/api/v1/mcc/updateMcc/${code}`, data, {
-        params: { ...getDefaultParams() } 
+        params: { ...getDefaultParams() }
     });
 }
 

@@ -23,9 +23,12 @@ const Access = (props: IProps) => {
                 && item.module === permission.module
             )
             if (check) {
+                console.log("check permission", check);
                 setAllow(true)
-            } else
+            } else{
+                console.log("check permission false", check);
                 setAllow(false);
+            }
         }
     }, [permissions])
 

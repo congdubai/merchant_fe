@@ -10,6 +10,8 @@ import { IMcc } from "../types/backend";
 import { fetchMcc } from "../redux/slice/mccSlice";
 import ModalMcc from "@/components/admin/mcc/modal.mcc";
 import { callDeleteMcc } from "@/config/api";
+import Access from "@/components/share/access";
+import { ALL_PERMISSIONS } from "@/config/permissions";
 
 const MccPage = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
@@ -25,7 +27,7 @@ const MccPage = () => {
     const reloadTable = () => {
         tableRef?.current?.reload();
     };
-    
+
     const handleDeleteMcc = async (code: string | undefined) => {
         if (code) {
             try {
@@ -73,29 +75,39 @@ const MccPage = () => {
         },
         {
             title: "Chức năng",
-            hideInSearch: true, 
+            hideInSearch: true,
             width: 100,
             render: (_value, entity) => (
                 <Space>
-                    <EditOutlined
-                        style={{ fontSize: 20, color: "#ffa500", cursor: "pointer" }}
-                        onClick={() => {
-                            setDataInit(entity);
-                            setOpenModal(true);
-                        }}
-                    />
-                    <Popconfirm
-                        placement="leftTop"
-                        title="Xác nhận xóa MCC"
-                        description="Bạn có chắc chắn muốn xóa MCC này?"
-                        onConfirm={() => handleDeleteMcc(entity.code)} // <<< Đã có hàm để gọi
-                        okText="Xác nhận"
-                        cancelText="Hủy"
+                    <Access
+                        permission={ALL_PERMISSIONS.MCC.UPDATE}
+                        hideChildren
                     >
-                        <span style={{ cursor: "pointer" }}>
-                            <DeleteOutlined style={{ fontSize: 20, color: "#ff4d4f" }} />
-                        </span>
-                    </Popconfirm>
+                        <EditOutlined
+                            style={{ fontSize: 20, color: "#ffa500", cursor: "pointer" }}
+                            onClick={() => {
+                                setDataInit(entity);
+                                setOpenModal(true);
+                            }}
+                        />
+                    </Access>
+                    <Access
+                        permission={ALL_PERMISSIONS.MCC.DELETE}
+                        hideChildren
+                    >
+                        <Popconfirm
+                            placement="leftTop"
+                            title="Xác nhận xóa MCC"
+                            description="Bạn có chắc chắn muốn xóa MCC này?"
+                            onConfirm={() => handleDeleteMcc(entity.code)} // <<< Đã có hàm để gọi
+                            okText="Xác nhận"
+                            cancelText="Hủy"
+                        >
+                            <span style={{ cursor: "pointer" }}>
+                                <DeleteOutlined style={{ fontSize: 20, color: "#ff4d4f" }} />
+                            </span>
+                        </Popconfirm>
+                    </Access>
                 </Space>
             ),
         },
@@ -114,59 +126,70 @@ const MccPage = () => {
             if (q.filter) q.filter += " and ";
             q.filter += `${sfLike("description", clone.description)}`;
         }
-        
+
         if (!q.filter) delete q.filter;
         let temp = queryString.stringify(q);
 
         let sortBy = "";
         if (sort?.code) sortBy = `sort=code,${sort.code === 'ascend' ? 'asc' : 'desc'}`;
         if (sort?.description) sortBy = `sort=description,${sort.description === 'ascend' ? 'asc' : 'desc'}`;
-        
+
         if (sortBy) temp += `&${sortBy}`;
-        
+
         return temp;
     };
 
     return (
         <div>
-            <DataTable<IMcc>
-                actionRef={tableRef}
-                headerTitle="Danh sách MCC"
-                rowKey="code"
-                loading={isFetching}
-                columns={columns}
-                dataSource={mccList}
-                request={async (params, sort): Promise<any> => {
-                    const query = buildQuery(params, sort);
-                    dispatch(fetchMcc({ query }));
-                    return {
-                        data: mccList,
-                        success: true,
-                        total: meta.total
-                    }
-                }}
-                scroll={{ x: true }}
-                pagination={{
-                    current: meta.page,
-                    pageSize: meta.pageSize,
-                    showSizeChanger: true,
-                    total: meta.total, 
-                    showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} mục`,
-                }}
-                rowSelection={false}
-                toolBarRender={() => [
-                    <Button 
-                        icon={<PlusOutlined />} 
-                        type="primary" 
-                        onClick={() => {
-                            setDataInit(null);
-                            setOpenModal(true);
-                        }}
-                    >
-                        Thêm mới
-                    </Button>
-                ]}
-            />
+            <Access
+                permission={ALL_PERMISSIONS.MCC.GET_ALL}
+                hideChildren
+            >
+                <DataTable<IMcc>
+                    actionRef={tableRef}
+                    headerTitle="Danh sách MCC"
+                    rowKey="code"
+                    loading={isFetching}
+                    columns={columns}
+                    dataSource={mccList}
+                    request={async (params, sort): Promise<any> => {
+                        const query = buildQuery(params, sort);
+                        dispatch(fetchMcc({ query }));
+                        return {
+                            data: mccList,
+                            success: true,
+                            total: meta.total
+                        }
+                    }}
+                    scroll={{ x: true }}
+                    pagination={{
+                        current: meta.page,
+                        pageSize: meta.pageSize,
+                        showSizeChanger: true,
+                        total: meta.total,
+                        showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} mục`,
+                    }}
+                    rowSelection={false}
+
+                    toolBarRender={() => [
+                        <Access
+                            permission={ALL_PERMISSIONS.MCC.CREATE}
+                            hideChildren
+                        >
+                            <Button
+                                icon={<PlusOutlined />}
+                                type="primary"
+                                onClick={() => {
+                                    setDataInit(null);
+                                    setOpenModal(true);
+                                }}
+                            >
+                                Thêm mới
+                            </Button>
+                        </Access>
+                    ]}
+                />
+            </Access>
             <ModalMcc
                 openModal={openModal}
                 setOpenModal={setOpenModal}

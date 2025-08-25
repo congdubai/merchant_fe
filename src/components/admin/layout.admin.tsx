@@ -68,6 +68,10 @@ const LayoutAdmin = () => {
                 item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath
                 && item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
             )
+            const viewMCC = permissions?.find(item =>
+                item.apiPath === ALL_PERMISSIONS.MCC.GET_ALL.apiPath
+                && item.method === ALL_PERMISSIONS.MCC.GET_ALL.method
+            )
 
             // { label: <Link to='/admin'>Quản lý Merchant</Link>, key: '/admin', icon: <HomeOutlined /> },
             // { label: <Link to='/admin/report'>Báo cáo</Link>, key: '/admin/report', icon: <UserOutlined /> },
@@ -77,11 +81,16 @@ const LayoutAdmin = () => {
             // { label: <Link to='/admin/permisson'>Permission</Link>, key: '/admin/permisson', icon: <UserOutlined /> },
             // { label: <Link to='/admin/mcc'>Quản lý Mcc</Link>, key: '/admin/mcc', icon: <BankOutlined /> },
             const full = [
-                {
+                // {
+                //     label: <Link to='/admin'>Quản lý Merchant</Link>,
+                //     key: '/admin',
+                //     icon: <AppstoreOutlined />
+                // },
+                ...(viewMerchant || ACL_ENABLE === 'false' ? [{
                     label: <Link to='/admin'>Quản lý Merchant</Link>,
                     key: '/admin',
-                    icon: <AppstoreOutlined />
-                },
+                    icon: <AppstoreOutlined />,
+                }] : []),
                 ...(viewMerchant_Export || ACL_ENABLE === 'false' ? [{
                     label: <Link to='/admin/report'>Báo cáo</Link>,
                     key: '/admin/report',
@@ -115,47 +124,12 @@ const LayoutAdmin = () => {
                     key: '/admin/role',
                     icon: <ExceptionOutlined />
                 }] : []),
-
-
-
+                ...(viewMCC || ACL_ENABLE === 'false' ? [{
+                    label: <Link to='/admin/mcc'>Quản lý Mcc</Link>,
+                    key: '/admin/mcc',
+                    icon: <ExceptionOutlined />
+                }] : []),
             ];
-            // const full = [
-            //     {
-            //         label: <Link to='/admin'>Quản lý Merchant</Link>,
-            //         key: '/admin',
-            //         icon: <HomeOutlined />
-            //     },
-
-            //     ...(ACL_ENABLE === 'false' || viewMerchant ? [{
-            //         label: <Link to='/admin/report'>Báo cáo</Link>,
-            //         key: '/admin/report',
-            //         icon: <UserOutlined />,
-            //     }] : []),
-
-            //     ...(ACL_ENABLE === 'false' || viewUser ? [{
-            //         label: <Link to='/admin/user'>User</Link>,
-            //         key: '/admin/user',
-            //         icon: <UserOutlined />
-            //     }] : []),
-
-            //     ...(ACL_ENABLE === 'false' || viewMERCHANT_HISTORY ? [{
-            //         label: <Link to='/admin/merchant-history'>Merchant History</Link>,
-            //         key: '/admin/merchant-history',
-            //         icon: <ScheduleOutlined />
-            //     }] : []),
-
-            //     ...(ACL_ENABLE === 'false' || viewPermission ? [{
-            //         label: <Link to='/admin/permisson'>Permission</Link>,
-            //         key: '/admin/permisson',
-            //         icon: <ApiOutlined />
-            //     }] : []),
-
-            //     ...(ACL_ENABLE === 'false' || viewRole ? [{
-            //         label: <Link to='/admin/role'>Role</Link>,
-            //         key: '/admin/role',
-            //         icon: <ExceptionOutlined />
-            //     }] : []),
-            // ];
 
             setMenuItems(full);
         }

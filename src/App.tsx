@@ -46,7 +46,10 @@ export default function App() {
         {
           path: "mcc",
           element:
-            <MccPage />
+            <ProtectedRoute>
+              <MccPage />
+            </ProtectedRoute>
+
         },
         {
           path: "report",

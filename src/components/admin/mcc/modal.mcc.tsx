@@ -7,7 +7,7 @@ import { callCreateMcc, callUpdateMcc } from "@/config/api";
 interface IProps {
     openModal: boolean;
     setOpenModal: (v: boolean) => void;
-    reloadTable: () => void; 
+    reloadTable: () => void;
     dataInit?: IMcc | null;
     setDataInit: (v: any) => void;
 }
@@ -25,7 +25,6 @@ const ModalMcc = (props: IProps) => {
     }, [dataInit]);
 
     const submitMcc = async (valuesForm: IMcc) => {
-    try {
         let res: any; // res sẽ là toàn bộ phản hồi từ Axios
 
         if (dataInit?.code) {
@@ -51,26 +50,16 @@ const ModalMcc = (props: IProps) => {
             handleReset();
             reloadTable();
         } else {
-            // Xảy ra khi API trả về 200 OK nhưng body rỗng hoặc không đúng định dạng
+            const errorMessage =
+                res.errorDesc ?? // Tìm 'errorDesc' trước
+                "Có lỗi không xác định";
+
             notification.error({
                 message: 'Thao tác thất bại',
-                description: "API không trả về dữ liệu mong đợi."
+                description: errorMessage
             });
         }
-
-    } catch (error: any) {
-        // Xử lý chung cho lỗi HTTP (status 4xx, 5xx)
-        const errorMessage =
-            error?.response?.data?.errorDesc ?? // Tìm 'errorDesc' trước
-            error?.response?.data?.message ??   // Nếu không có thì tìm 'message'
-            "Có lỗi không xác định";
-
-        notification.error({
-            message: 'Thao tác thất bại',
-            description: errorMessage
-        });
     }
-}
 
     const handleReset = () => {
         form.resetFields();
@@ -119,7 +108,7 @@ const ModalMcc = (props: IProps) => {
                 </Col>
                 <Col span={24}>
                     <ProFormSelect
-                        name="active" 
+                        name="active"
                         label="Trạng thái"
                         initialValue={true}
                         rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}

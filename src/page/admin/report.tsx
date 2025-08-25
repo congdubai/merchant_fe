@@ -62,7 +62,6 @@ const ReportPage = () => {
             try {
                 setExportByYearLoading(true);
                 const res = await callReportMerchantByYear(year.format("YYYY"));
-
                 setExportByYear(res.data!);
             } catch (err: any) {
                 setExportByYearError(err.message || 'Đã có lỗi xảy ra');

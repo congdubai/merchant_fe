@@ -15,6 +15,8 @@ import { callDeleteMerchant } from "@/config/api";
 
 import { callSearchMerchants } from "@/config/api";
 import ModalUpdateMerchant from "@/components/merchant/ModalUpdateMerchant";
+import { ALL_PERMISSIONS } from "@/config/permissions";
+import Access from "@/components/share/access";
 
 const MerchantPage = () => {
     const [openModalCreate, setOpenModalCreate] = useState<boolean>(false);
@@ -31,7 +33,7 @@ const MerchantPage = () => {
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const reloadTable = () => {
         tableRef?.current?.reload();
-    } 
+    }
 
     const handleDeleteMerchant = async (id: string | undefined) => {
         if (id) {
@@ -152,7 +154,7 @@ const MerchantPage = () => {
             sorter: true,
             render: (text, record, index, action) => {
                 return (
-                    <>{record.openDate ? dayjs(record.openDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
+                    <>{record.closeDate ? dayjs(record.closeDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
                 )
             },
             hideInSearch: true,
@@ -163,7 +165,7 @@ const MerchantPage = () => {
             sorter: true,
             render: (text, record, index, action) => {
                 return (
-                    <>{record.openDate ? dayjs(record.openDate).format('DD-MM-YYYY HH:mm:ss') : ""}</>
+                    <>{record.updatedAt ? dayjs(record.updatedAt).format('DD-MM-YYYY HH:mm:ss') : ""}</>
                 )
             },
             hideInSearch: true,
@@ -185,34 +187,44 @@ const MerchantPage = () => {
             width: 50,
             render: (_value, entity, _index, _action) => (
                 <Space>
-                    <EditOutlined
-                        style={{
-                            fontSize: 20,
-                            color: '#ffa500',  
-                        }}
-                        type=""
-                        onClick={() => {
-                            setDataInit(entity);
-                            setIsUpdateModalOpen(true);
-                        }}
-                    />
-                    <Popconfirm
-                        placement="leftTop"
-                        title={"Xác nhận xóa Merchant"}
-                        description={"Bạn có chắc chắn muốn xóa Merchanr này ?"}
-                        onConfirm={() => handleDeleteMerchant(entity.merchantId)}
-                        okText="Xác nhận"
-                        cancelText="Hủy"
+                    < Access
+                        permission={ALL_PERMISSIONS.MERCHANT.UPDATE}
+                        hideChildren
                     >
-                        <span style={{ cursor: "pointer", margin: "0 10px" }}>
-                            <DeleteOutlined
-                                style={{
-                                    fontSize: 20,
-                                    color: '#ff4d4f',
-                                }}
-                            />
-                        </span>
-                    </Popconfirm>
+                        <EditOutlined
+                            style={{
+                                fontSize: 20,
+                                color: '#ffa500',
+                            }}
+                            type=""
+                            onClick={() => {
+                                setDataInit(entity);
+                                setIsUpdateModalOpen(true);
+                            }}
+                        />
+                    </Access>
+                    < Access
+                        permission={ALL_PERMISSIONS.USERS.DELETE}
+                        hideChildren
+                    >
+                        <Popconfirm
+                            placement="leftTop"
+                            title={"Xác nhận xóa Merchant"}
+                            description={"Bạn có chắc chắn muốn xóa Merchanr này ?"}
+                            onConfirm={() => handleDeleteMerchant(entity.merchantId)}
+                            okText="Xác nhận"
+                            cancelText="Hủy"
+                        >
+                            <span style={{ cursor: "pointer", margin: "0 10px" }}>
+                                <DeleteOutlined
+                                    style={{
+                                        fontSize: 20,
+                                        color: '#ff4d4f',
+                                    }}
+                                />
+                            </span>
+                        </Popconfirm>
+                    </Access>
                 </Space>
             ),
 
@@ -285,61 +297,71 @@ const MerchantPage = () => {
 
     return (
         <div>
-            <DataTable<IMerchant>
-                actionRef={tableRef}
-                headerTitle="Danh sách Merchant"
-                rowKey="merchantId"
-                loading={isFetching}
-                columns={columns}
-                dataSource={merchants}
-                request={async (params, sort, filter): Promise<any> => {
-                    const hasSearch = params.merchantId && params.merchantId.trim() || params.accountNo && params.accountNo.trim() ||
-                        params.status && params.status.trim() !== '';
+            < Access
+                permission={ALL_PERMISSIONS.MERCHANT.GET_MERCHANT}
+                hideChildren
+            >
+                <DataTable<IMerchant>
+                    actionRef={tableRef}
+                    headerTitle="Danh sách Merchant"
+                    rowKey={(record) => `${record.merchantId}-${record.accountNo}`}
+                    loading={isFetching}
+                    columns={columns}
+                    dataSource={merchants}
+                    request={async (params, sort, filter): Promise<any> => {
+                        const hasSearch = params.merchantId && params.merchantId.trim() || params.accountNo && params.accountNo.trim() ||
+                            params.status && params.status.trim() !== '';
 
-                    if (hasSearch) {
-                        const querySearch = buildQuerySearch(params, sort, filter);
-                        await dispatch(searchhMerchant({ query: querySearch }));
-                    } else {
-                        const queryAll = buildQuery(params, sort, filter);
-                        await dispatch(fetchMerchant({ query: queryAll }));
-                    }
-                }}
+                        if (hasSearch) {
+                            const querySearch = buildQuerySearch(params, sort, filter);
+                            await dispatch(searchhMerchant({ query: querySearch }));
+                        } else {
+                            const queryAll = buildQuery(params, sort, filter);
+                            await dispatch(fetchMerchant({ query: queryAll }));
+                        }
+                    }}
 
-                scroll={{ x: true }}
-                pagination={
-                    {
-                        current: meta.page,
-                        pageSize: meta.pageSize,
-                        showSizeChanger: true,
-                        total: meta.total,
-                        showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                    scroll={{ x: true }}
+                    pagination={
+                        {
+                            current: meta.page,
+                            pageSize: meta.pageSize,
+                            showSizeChanger: true,
+                            total: meta.total,
+                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                        }
                     }
-                }
-                rowSelection={false}
-                toolBarRender={() => [
-                    <Space key="main-actions">
-                        <Button
-                            icon={<PlusOutlined />}
-                            type="primary"
-                            onClick={() => setOpenModalCreate(true)}
+                    rowSelection={false}
+                    toolBarRender={() => [
+                        < Access
+                            permission={ALL_PERMISSIONS.MERCHANT.CREATE}
+                            hideChildren
                         >
-                            Thêm mới
-                        </Button>
-                        <Button
-                            icon={<UploadOutlined />}
-                            type="default"
-                            onClick={() => setOpenModalImport(true)}
-                        >
-                            Thêm nhiều
-                        </Button>
-                    </Space>
-                ]}
-            />
-            
-             <ModalCreateMerchant
+                            <Space key="main-actions">
+                                <Button
+                                    icon={<PlusOutlined />}
+                                    type="primary"
+                                    onClick={() => setOpenModalCreate(true)}
+                                >
+                                    Thêm mới
+                                </Button>
+                                <Button
+                                    icon={<UploadOutlined />}
+                                    type="default"
+                                    onClick={() => setOpenModalImport(true)}
+                                >
+                                    Thêm nhiều
+                                </Button>
+                            </Space>
+                        </Access>
+                    ]}
+                />
+            </Access>
+
+            <ModalCreateMerchant
                 openModal={openModalCreate}
                 setOpenModal={setOpenModalCreate}
-                reloadTable={reloadTable} 
+                reloadTable={reloadTable}
             />
             <ModalImportMerchant
                 openModal={openModalImport}
